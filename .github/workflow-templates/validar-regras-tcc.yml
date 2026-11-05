@@ -1,0 +1,31 @@
+name: Validar Regra Institucional (Somente Código no GitHub)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  verificar-arquivos-proibidos:
+    name: Bloquear Documentos TCC, Slides e Vídeos (Exclusivos do Canvas)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Verificar presença de documentos formais, apresentações ou vídeos
+        shell: bash
+        run: |
+          echo "Verificando conformidade com a regra da Coordenação de Engenharia de Computação (PUCPR)..."
+          VIOLACOES=$(git ls-files | grep -iE '\.(pdf|doc|docx|odt|ppt|pptx|odp|key|mp4|avi|mov|mkv|wmv|flv|webm|rar|7z|iso)$|(^|/)(docs|presentation|presentations|apresentacao|videos|releases)/' || true)
+          if [ -n "$VIOLACOES" ]; then
+            echo "❌ ERRO DE CONFORMIDADE INSTITUCIONAL:"
+            echo "Foram encontrados arquivos de documentação formal, apresentações, vídeos ou pastas proibidas neste envio:"
+            echo "$VIOLACOES"
+            echo ""
+            echo "👉 LEMBRETE: Este repositório do GitHub destina-se EXCLUSIVAMENTE aos códigos dos softwares/firmwares."
+            echo "Os documentos do Trabalho de Conclusão de Curso (Proposta, Plano de Projeto, Especificação Física, Relatório Final) e as apresentações devem ser arquivados exclusivamente no CANVAS da PUCPR."
+            exit 1
+          fi
+          echo "✅ Conformidade verificada! Nenhum documento formal, apresentação ou vídeo foi encontrado."

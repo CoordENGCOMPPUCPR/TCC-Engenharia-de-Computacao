@@ -1,0 +1,182 @@
+# =============================================================================
+# .gitignore - Repositório de TCC | Engenharia de Computação - PUCPR
+# =============================================================================
+# REGRA INSTITUCIONAL:
+# Este repositório destina-se EXCLUSIVAMENTE ao versionamento de CÓDIGO-FONTE.
+# Documentos do TCC (Proposta, Plano de Projeto, Especificação Física,
+# Relatório Técnico Final, Artigos), Apresentações (Slides) e Vídeos devem ser
+# entregues e arquivados exclusivamente no CANVAS da PUCPR.
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# 1. BLOQUEIO DE DOCUMENTOS, APRESENTAÇÕES E MÍDIAS (USO EXCLUSIVO NO CANVAS)
+# -----------------------------------------------------------------------------
+*.pdf
+*.doc
+*.docx
+*.odt
+*.rtf
+*.tex
+*.bib
+*.ppt
+*.pptx
+*.odp
+*.key
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+*.webm
+*.mp3
+*.wav
+
+# Pastas de documentação formal, apresentações, vídeos e binários soltos
+docs/
+doc/
+documentacao/
+presentation/
+presentations/
+apresentacao/
+apresentacoes/
+slides/
+videos/
+video/
+releases/
+
+# -----------------------------------------------------------------------------
+# 2. CREDENCIAIS, VARIÁVEIS DE AMBIENTE E SEGREDOS (NUNCA VERSIONAR)
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+secrets.*
+credentials.json
+service-account*.json
+
+# -----------------------------------------------------------------------------
+# 3. PYTHON / INTELIGÊNCIA ARTIFICIAL / DATA SCIENCE
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+ENV/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+.installed.cfg
+*.egg
+# Pesos de modelos grandes (usar script de download ou armazenamento externo)
+*.h5
+*.hdf5
+*.ckpt
+*.safetensors
+
+# -----------------------------------------------------------------------------
+# 4. NODE.JS / FRONTEND / WEB / MOBILE
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+.next/
+.nuxt/
+dist/
+build/
+out/
+.cache/
+.parcel-cache/
+*.tsbuildinfo
+
+# -----------------------------------------------------------------------------
+# 5. SISTEMAS EMBARCADOS / FIRMWARE / C / C++ / IOT / HARDWARE
+# -----------------------------------------------------------------------------
+# Compilados C/C++
+*.o
+*.obj
+*.ko
+*.elf
+*.bin
+*.hex
+*.uf2
+*.map
+*.lst
+*.out
+*.exe
+*.dll
+*.dylib
+*.a
+*.lib
+
+# PlatformIO / ESP-IDF / Arduino / STM32CubeIDE / Keil
+.pio/
+sdkconfig.old
+managed_components/
+Debug/
+Release/
+*.launch
+
+# Arquivos temporários de EDA (KiCad / Eagle / Altium / Proteus)
+*-backups/
+fp-info-cache
+*.b#
+*.s#
+*.l#
+*.PcbDoc.htm
+*.SchDoc.htm
+History/
+
+# -----------------------------------------------------------------------------
+# 6. JAVA / KOTLIN / C# / .NET / RUST / GO
+# -----------------------------------------------------------------------------
+target/
+*.class
+*.jar
+*.war
+*.ear
+.gradle/
+bin/
+obj/
+*.user
+*.suo
+
+# -----------------------------------------------------------------------------
+# 7. COMPACTADOS E DATASETS BRUTOS GRANDES
+# -----------------------------------------------------------------------------
+*.zip
+*.rar
+*.7z
+*.tar
+*.tar.gz
+*.tgz
+*.iso
+
+# -----------------------------------------------------------------------------
+# 8. IDEs E ARQUIVOS DE SISTEMA OPERACIONAL
+# -----------------------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+enderco_GIT.txt
