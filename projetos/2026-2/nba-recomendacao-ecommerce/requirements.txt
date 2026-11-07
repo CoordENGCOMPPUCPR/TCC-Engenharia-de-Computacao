@@ -1,0 +1,20 @@
+# Dependências do projeto, nas versões em que os modelos e resultados foram gerados.
+# As mesmas versões estão no setup.py. Instalação: python -m pip install -r requirements.txt
+
+lightgbm==4.6.0
+scikit-learn==1.6.1
+pandas==2.3.3
+numpy==2.0.2
+scipy==1.13.1
+shap==0.49.1
+numba==0.60.0
+pyarrow==21.0.0
+mlxtend==0.23.4
+fastapi==0.128.8
+uvicorn==0.39.0
+optuna==4.9.0
+matplotlib==3.9.4
+
+# testes
+pytest==8.4.2
+httpx==0.28.1

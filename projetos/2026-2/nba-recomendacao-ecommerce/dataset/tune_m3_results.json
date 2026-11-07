@@ -1,0 +1,22 @@
+{
+  "population": "disparo (T=120s + atividade)",
+  "n_sessions": 73101,
+  "sample_n_sessions": 7058,
+  "method": "5-fold StratifiedKFold out-of-fold (brand_vocab recalculado por fold)",
+  "auc_roc_base": 0.743,
+  "auc_roc_tuned": 0.7435,
+  "delta": 0.0004,
+  "tuned_params": {
+    "n_estimators": 181,
+    "learning_rate": 0.011005826250495341,
+    "num_leaves": 127,
+    "min_child_samples": 95,
+    "subsample": 0.9068460031285606,
+    "colsample_bytree": 0.9050245298375554,
+    "objective": "binary",
+    "metric": "auc",
+    "verbose": -1,
+    "random_state": 42,
+    "n_jobs": 1
+  }
+}

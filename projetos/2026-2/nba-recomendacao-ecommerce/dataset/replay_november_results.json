@@ -1,0 +1,22 @@
+{
+  "source": "2019-Nov.csv",
+  "total_events_processed": 16660869,
+  "cart_sessions": 1736910,
+  "n_eligible": 274931,
+  "coverage_eligible_over_cart": 0.1583,
+  "exclusion_reasons": {
+    "user_left": 570755,
+    "too_few_pre_cart_events": 525690,
+    "purchased_within_window": 371967
+  },
+  "purchased": 648363,
+  "action_rate": 0.535,
+  "n_with_rule": 8021,
+  "n_with_product": 8021,
+  "actions": {
+    "no_intervention": 127842,
+    "strong_intervention": 60433,
+    "moderate_intervention": 86656
+  },
+  "elapsed_s": 878.0
+}

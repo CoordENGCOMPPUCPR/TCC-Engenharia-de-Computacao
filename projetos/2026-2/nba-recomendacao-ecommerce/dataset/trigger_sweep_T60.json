@@ -1,0 +1,11 @@
+{
+  "t_window_s": 60.0,
+  "require_activity": true,
+  "n_oct": 66863,
+  "auc_cv_out": 0.7267,
+  "n_nov": 246652,
+  "denom_n5_nov": 507143,
+  "pct_disparo": 48.6,
+  "pct_abandono_nov": 82.8,
+  "auc_nov": 0.7015
+}

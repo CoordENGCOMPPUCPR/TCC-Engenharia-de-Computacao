@@ -1,0 +1,79 @@
+{
+  "theta_1": 0.9136878708785061,
+  "theta_2": 0.8434451147448246,
+  "artifact_sha256": {
+    "model.lgb": "2180de6f5c4eed9f8829da9b9d26e4c8118479076b48e7ed028986a6affebfaf",
+    "ruleset.pkl": "62fd055493ba18b7b85228b194ada3d1e3d75fcaa39a1a1742740f7bf86c6bc7",
+    "brand_vocab.pkl": "bb47a69c5c7de848d8f9099462c9e0c3e6734b83688c5a565c62043552cddc65",
+    "product_lookup.parquet": "43e62c60092869edc41a2874cd7a7258cd869391bfa2e30d48d5531f4069c7b2",
+    "thresholds.json": "04e4518925a84f59fd1c83e7c3193d2459cf149a571228ac5a4b0187c9189236"
+  },
+  "outubro": {
+    "source": "2019-Oct.csv",
+    "n_sessions": 73101,
+    "auc_roc": 0.815551,
+    "action_rate_theta1_pct": 19.971,
+    "action_rate_theta2_pct": 50.1443,
+    "precision_theta2_pct": 93.5972,
+    "n_sessions_with_applicable_rule": 6170,
+    "rule_applicability_pct": 8.4404,
+    "n_recommendation_reach": 3286,
+    "recommendation_reach_pct": 4.4952,
+    "candidate_rule_count_distribution": {
+      "0": 66931,
+      "1": 6164,
+      "2": 6,
+      "3": 0,
+      "4": 0,
+      "4+": 0
+    },
+    "cart_items_count_distribution": {
+      "1": 72869,
+      "2": 226,
+      "3": 6,
+      "4": 0,
+      "4+": 0
+    },
+    "distinct_recommended_product_ids": 1,
+    "recommended_product_id_counts": {
+      "1004856": 3286
+    },
+    "nba_score_mean": 0.632055,
+    "feature_matrix_and_pabandon_sha256": "8c0f9c9b430ed236cb0b064f241576a2a67a1449104cd91b4a3ff77f8a3c67cc",
+    "elapsed_s": 261.0
+  },
+  "novembro": {
+    "source": "2019-Nov.csv",
+    "n_sessions": 274954,
+    "auc_roc": 0.716202,
+    "action_rate_theta1_pct": 21.9826,
+    "action_rate_theta2_pct": 53.5079,
+    "precision_theta2_pct": 92.8284,
+    "n_sessions_with_applicable_rule": 15946,
+    "rule_applicability_pct": 5.7995,
+    "n_recommendation_reach": 8021,
+    "recommendation_reach_pct": 2.9172,
+    "candidate_rule_count_distribution": {
+      "0": 259008,
+      "1": 15918,
+      "2": 28,
+      "3": 0,
+      "4": 0,
+      "4+": 0
+    },
+    "cart_items_count_distribution": {
+      "1": 272395,
+      "2": 2486,
+      "3": 69,
+      "4": 4,
+      "4+": 4
+    },
+    "distinct_recommended_product_ids": 1,
+    "recommended_product_id_counts": {
+      "1004856": 8021
+    },
+    "nba_score_mean": 0.635025,
+    "feature_matrix_and_pabandon_sha256": "c1a68cb98796438dc7fa8de1f08b65f5f165b8307848f4c84b80812f67de3131",
+    "elapsed_s": 788.3
+  }
+}

@@ -1,0 +1,92 @@
+{
+  "events": [
+    {
+      "event_time": "2019-11-01T11:00:00",
+      "event_type": "view",
+      "product_id": 1004767,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.98,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    },
+    {
+      "event_time": "2019-11-01T11:01:48",
+      "event_type": "view",
+      "product_id": 1004767,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.98,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    },
+    {
+      "event_time": "2019-11-01T11:02:34",
+      "event_type": "view",
+      "product_id": 1004766,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 242.22,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    },
+    {
+      "event_time": "2019-11-01T11:02:52",
+      "event_type": "view",
+      "product_id": 1004767,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.98,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    },
+    {
+      "event_time": "2019-11-01T11:04:00",
+      "event_type": "cart",
+      "product_id": 1004767,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.98,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    },
+    {
+      "event_time": "2019-11-01T11:04:26",
+      "event_type": "view",
+      "product_id": 1004767,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.98,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    },
+    {
+      "event_time": "2019-11-01T11:10:00",
+      "event_type": "view",
+      "product_id": 1004768,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 242.11,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    },
+    {
+      "event_time": "2019-11-01T11:10:27",
+      "event_type": "view",
+      "product_id": 1004767,
+      "category_id": "2053013555631882655",
+      "category_code": "electronics.smartphone",
+      "brand": "samsung",
+      "price": 241.98,
+      "user_id": 513903572,
+      "user_session": "451c2d74-2b4a-46d6-9489-bd415e95c3f4"
+    }
+  ]
+}

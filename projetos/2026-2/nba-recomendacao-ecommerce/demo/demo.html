@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NBA — Demonstração ao vivo</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0A0E17;
+    --surface:  #111827;
+    --surface2: #1A2235;
+    --border:   #1F2D45;
+    --accent:   #6366F1;
+    --text:     #F1F5F9;
+    --muted:    #7C8AA3;
+    --mono:     "JetBrains Mono", "Cascadia Code", Consolas, "Courier New", monospace;
+
+    --c-strong:   #F43F5E;
+    --c-moderate: #F59E0B;
+    --c-none:     #10B981;
+    --c-skip:     #64748B;
+    --shap-pos: #6366F1;
+    --shap-neg: #F43F5E;
+  }
+
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    font-size: 15px; line-height: 1.5;
+    height: 100vh; display: grid; grid-template-rows: auto auto 1fr;
+    overflow: hidden;
+  }
+
+  /* ── Cabeçalho ── */
+  header {
+    padding: 14px 26px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 18px;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; letter-spacing: -0.01em; }
+  .logo-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+  .logo small { color: var(--muted); font-weight: 400; letter-spacing: 0; }
+  .spacer { flex: 1; }
+  .conn { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+  .conn b { color: var(--c-none); font-weight: 500; }
+  .conn.off b { color: var(--c-strong); }
+
+  /* ── Barra de cenários ── */
+  .scenarios {
+    padding: 14px 26px; border-bottom: 1px solid var(--border);
+    display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap;
+  }
+  .sc {
+    flex: 1 1 0; min-width: 190px; text-align: left; cursor: pointer;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    padding: 10px 13px; color: var(--text); font: inherit;
+    transition: border-color .15s, background .15s;
+  }
+  .sc:hover:not(:disabled) { border-color: var(--accent); background: var(--surface2); }
+  .sc[aria-pressed="true"] { border-color: var(--accent); background: var(--surface2); }
+  .sc:disabled { opacity: .45; cursor: progress; }
+  .sc b { display: block; font-size: 13.5px; font-weight: 600; margin-bottom: 2px; }
+  .sc span { display: block; font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+  .sc-n { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+
+  /* ── Palco ── */
+  main {
+    display: grid; grid-template-columns: 1.1fr 1fr; gap: 0;
+    overflow: hidden; min-height: 0;
+  }
+  .pane { padding: 18px 26px; overflow-y: auto; min-height: 0; }
+  .pane + .pane { border-left: 1px solid var(--border); }
+  h2 {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .09em; color: var(--muted); margin-bottom: 12px;
+  }
+
+  /* ── Relógio da janela ── */
+  .clock { margin-bottom: 16px; }
+  .clock-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-family: var(--mono); font-size: 12.5px; color: var(--muted); margin-bottom: 6px;
+  }
+  .clock-head b { font-size: 20px; color: var(--text); font-weight: 600; }
+  .bar { height: 7px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0; background: var(--accent); transition: width .18s linear; }
+  .bar.done i { background: var(--c-none); }
+  .bar.cancel i { background: var(--c-skip); }
+
+  /* ── Linha do tempo ── */
+  .tl { display: flex; flex-direction: column; gap: 3px; font-family: var(--mono); font-size: 12.5px; }
+  .ev {
+    display: grid; grid-template-columns: 62px 74px 1fr auto; gap: 10px;
+    align-items: center; padding: 6px 10px; border-radius: 5px;
+    background: var(--surface); border-left: 2px solid var(--border);
+    animation: in .18s ease-out;
+  }
+  @keyframes in { from { opacity: 0; transform: translateX(-6px); } }
+  .ev .t { color: var(--muted); }
+  .ev .tp { font-weight: 600; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+  .ev .d { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .ev .p { color: var(--text); }
+  .ev.view { border-left-color: var(--border); }
+  .ev.view .tp { color: var(--muted); }
+  .ev.cart { border-left-color: var(--accent); background: var(--surface2); }
+  .ev.cart .tp { color: var(--accent); }
+  .ev.purchase { border-left-color: var(--c-none); background: var(--surface2); }
+  .ev.purchase .tp { color: var(--c-none); }
+  .ev.post { border-left-color: var(--c-moderate); }
+  .ev.post .tp { color: var(--c-moderate); }
+  .ev.late { opacity: .45; }
+
+  .marker {
+    display: flex; align-items: center; gap: 9px; padding: 7px 10px; margin: 3px 0;
+    font-family: var(--mono); font-size: 11.5px; letter-spacing: .03em;
+    border-radius: 5px; background: rgba(99,102,241,.1);
+    border-left: 2px solid var(--accent); color: var(--accent);
+  }
+
+  /* ── Resultado ── */
+  .empty { color: var(--muted); font-size: 13.5px; line-height: 1.6; }
+  .verdict {
+    border-radius: 9px; padding: 15px 17px; margin-bottom: 14px;
+    border: 1px solid var(--border); background: var(--surface);
+    border-left: 3px solid var(--border);
+  }
+  .verdict.strong_intervention { border-left-color: var(--c-strong); }
+  .verdict.moderate_intervention { border-left-color: var(--c-moderate); }
+  .verdict.no_intervention { border-left-color: var(--c-none); }
+  .verdict.skipped { border-left-color: var(--c-skip); }
+  .vd-tag {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .09em;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .strong_intervention .vd-tag { color: var(--c-strong); }
+  .moderate_intervention .vd-tag { color: var(--c-moderate); }
+  .no_intervention .vd-tag { color: var(--c-none); }
+  .skipped .vd-tag { color: var(--c-skip); }
+  .vd-title { font-size: 20px; font-weight: 600; letter-spacing: -.015em; margin-bottom: 5px; }
+  .vd-why { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  .rows { display: flex; flex-direction: column; gap: 1px; margin-bottom: 14px; }
+  .row {
+    display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: baseline;
+    padding: 8px 12px; background: var(--surface); font-size: 13px;
+  }
+  .row:first-child { border-radius: 7px 7px 0 0; }
+  .row:last-child { border-radius: 0 0 7px 7px; }
+  .row .k { color: var(--muted); }
+  .row .v { font-family: var(--mono); font-size: 13px; text-align: right; }
+  .row .v.big { font-size: 17px; font-weight: 600; }
+  .row .v.nil { color: var(--muted); }
+  .row .v a { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); }
+
+  /* ── SHAP ── */
+  .shap { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
+  .sh { display: grid; grid-template-columns: 148px 1fr 60px; gap: 9px; align-items: center; font-size: 12px; }
+  .sh .n { color: var(--muted); font-family: var(--mono); font-size: 11px;
+           overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sh .track { height: 15px; background: var(--surface); border-radius: 3px; position: relative; }
+  .sh .track::after { content: ""; position: absolute; left: 50%; top: 0; bottom: 0;
+                      width: 1px; background: var(--border); }
+  .sh .track i { position: absolute; top: 2px; bottom: 2px; border-radius: 2px; }
+  .sh .val { font-family: var(--mono); font-size: 11px; color: var(--muted); text-align: right; }
+
+  details { margin-top: 4px; }
+  summary {
+    cursor: pointer; font-family: var(--mono); font-size: 11.5px; color: var(--muted);
+    padding: 5px 0; list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary::before { content: "▸ "; }
+  details[open] summary::before { content: "▾ "; }
+  pre {
+    font-family: var(--mono); font-size: 11px; line-height: 1.5; color: var(--muted);
+    background: var(--surface); border-radius: 6px; padding: 11px 13px;
+    overflow-x: auto; max-height: 230px; overflow-y: auto;
+  }
+
+  .metrics {
+    display: flex; gap: 20px; padding: 10px 13px; margin-top: 12px;
+    background: var(--surface); border-radius: 7px; font-family: var(--mono); font-size: 11.5px;
+    color: var(--muted); flex-wrap: wrap;
+  }
+  .metrics b { color: var(--text); font-weight: 600; }
+
+  .error {
+    padding: 13px 15px; border-radius: 8px; font-size: 13px; line-height: 1.55;
+    background: rgba(244,63,94,.1); border-left: 3px solid var(--c-strong);
+  }
+  .error b { display: block; margin-bottom: 4px; }
+  .error code { font-family: var(--mono); font-size: 12px; color: var(--text); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <span class="logo-dot"></span>
+    Motor NBA <small>· abandono de carrinho em tempo de sessão</small>
+  </div>
+  <div class="spacer"></div>
+  <div class="conn" id="conn">verificando a API…</div>
+</header>
+
+<div class="scenarios" id="scenarios"></div>
+
+<main>
+  <div class="pane">
+    <h2>Sessão em andamento</h2>
+    <div class="clock">
+      <div class="clock-head">
+        <span id="clock-label">janela de decisão</span>
+        <b id="clock-val">—</b>
+      </div>
+      <div class="bar" id="bar"><i></i></div>
+    </div>
+    <div class="tl" id="tl">
+      <p class="empty">Escolha um cenário acima. Os eventos da sessão entram um a um, como
+        chegariam de uma loja real.</p>
+    </div>
+  </div>
+
+  <div class="pane">
+    <h2>Decisão do motor</h2>
+    <div id="out">
+      <p class="empty">A decisão aparece quando a janela de 120&nbsp;s fecha.<br><br>
+        O motor só pontua a sessão se, nesse prazo, não houver compra e houver ao menos um
+        evento depois do carrinho.</p>
+    </div>
+    <div class="metrics" id="metrics" hidden></div>
+  </div>
+</main>
+
+<script>
+const API = (location.protocol === "file:" ? "http://127.0.0.1:8000" : location.origin);
+const T_WINDOW = 120;            // janela de decisão em segundos (src/trigger.py)
+const PASSO_MS = 320;            // ritmo de entrada dos eventos na projeção
+const CLOCK_MS = 2600;           // duração da contagem dos 120 s na projeção
+
+const FEATURES = [
+  "cart_view_ratio", "n_categories", "session_duration", "inter_event_time_mean",
+  "nav_depth", "dominant_brand", "cart_item_price", "views_of_cart_item",
+  "price_ratio", "hour_of_day", "cart_item_category_top", "cart_item_brand",
+  "n_events_after_cart", "n_views_after_cart", "n_categories_after_cart",
+  "idle_time_after_cart",
+];
+
+const ROTULO = {
+  strong_intervention:   ["Intervenção forte",    "Cupom de desconto"],
+  moderate_intervention: ["Intervenção moderada", "Produto complementar"],
+  no_intervention:       ["Sem intervenção",      "Não incomodar"],
+};
+
+const $ = (s) => document.querySelector(s);
+const esperar = (ms) => new Promise((r) => setTimeout(r, ms));
+const hhmmss = (s) => new Date(s * 1000).toISOString().slice(11, 19);
+
+let cenarios = [];
+let rodando = false;
+let ultimaSessao = null;         // id da última sessão enviada, para consulta em GET /session/{id}
+
+/* ─── Inicialização ─────────────────────────────────────────────────── */
+
+async function iniciar() {
+  try {
+    const r = await fetch(`${API}/demo/scenarios`);
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+    cenarios = (await r.json()).cenarios || [];
+    $("#conn").innerHTML = `API <b>no ar</b> · ${API.replace(/^https?:\/\//, "")}`;
+    desenharBotoes();
+  } catch (e) {
+    $("#conn").classList.add("off");
+    $("#conn").innerHTML = "API <b>fora do ar</b>";
+    $("#out").innerHTML = `<div class="error"><b>A API não respondeu.</b>
+      Suba o serviço na pasta do projeto:<br>
+      <code>python -m uvicorn src.api:app --port 8000</code></div>`;
+  }
+}
+
+function desenharBotoes() {
+  $("#scenarios").innerHTML = cenarios.map((c, i) => `
+    <button class="sc" data-i="${i}" aria-pressed="false">
+      <span class="sc-n">${i + 1}</span>
+      <b>${c.titulo}</b>
+      <span>${c.resumo}</span>
+    </button>`).join("");
+  document.querySelectorAll(".sc").forEach((b) => {
+    b.onclick = () => executar(Number(b.dataset.i));
+  });
+}
+
+/* ─── Execução de um cenário ────────────────────────────────────────── */
+
+async function executar(idx) {
+  if (rodando) return;
+  rodando = true;
+  const cen = cenarios[idx];
+  const botoes = document.querySelectorAll(".sc");
+  botoes.forEach((b, i) => { b.disabled = true; b.setAttribute("aria-pressed", i === idx); });
+
+  $("#tl").innerHTML = "";
+  $("#out").innerHTML = `<p class="empty">Recebendo eventos…</p>`;
+  $("#metrics").hidden = true;
+  zerarRelogio();
+
+  const hora = cen.hora_base ?? 10;
+  const cartT = cen.eventos.find((e) => e.event_type === "cart").t;
+
+  // a requisição parte já no início; a animação existe para a plateia acompanhar
+  const resposta = postSessao(cen, hora);
+
+  // antes do carrinho: um evento por vez, para a plateia ler a navegação
+  for (const e of cen.eventos.filter((e) => e.t < cartT)) {
+    adicionarEvento(e, cartT, hora);
+    await esperar(PASSO_MS);
+  }
+  marcador("carrinho — a janela de 120 s começa a contar");
+  adicionarEvento(cen.eventos.find((e) => e.t === cartT), cartT, hora);
+  await esperar(PASSO_MS);
+
+  const posteriores = cen.eventos.filter((e) => e.t > cartT);
+  const compraNaJanela = posteriores.some(
+    (e) => e.event_type === "purchase" && e.t - cartT <= T_WINDOW);
+  const posNaJanela = posteriores.filter(
+    (e) => e.t - cartT <= T_WINDOW && e.event_type !== "purchase").length;
+
+  // o relógio conta os 120 s e cada evento entra no segundo em que ocorre
+  const fila = posteriores.filter((e) => e.t - cartT <= T_WINDOW);
+  await animarRelogio(compraNaJanela, posNaJanela, (s) => {
+    while (fila.length && fila[0].t - cartT <= s) {
+      adicionarEvento(fila.shift(), cartT, hora);
+    }
+  });
+
+  // o que caiu fora da janela entra depois, esmaecido — já não conta para a decisão
+  posteriores.filter((e) => e.t - cartT > T_WINDOW)
+    .forEach((e) => adicionarEvento(e, cartT, hora));
+
+  let corpo, erro = null;
+  try { corpo = await resposta; } catch (e) { erro = e; }
+
+  if (erro) {
+    $("#out").innerHTML = `<div class="error"><b>A chamada falhou.</b>
+      <code>${erro.message}</code></div>`;
+  } else {
+    marcador(corpo ? "janela fechada — motor decide" : "disparo cancelado — sessão não é pontuada");
+    mostrarDecisao(corpo, cen, compraNaJanela, posNaJanela);
+    atualizarMetricas();
+  }
+
+  botoes.forEach((b) => { b.disabled = false; });
+  rodando = false;
+}
+
+/** Envia a sessão completa com um id novo a cada chamada, o que permite repetir o cenário
+ *  sem reiniciar o serviço. O mesmo id serve para consultar a decisão em GET /session/{id}. */
+async function postSessao(cen, hora) {
+  const sessao = crypto.randomUUID();
+  ultimaSessao = sessao;
+  const events = cen.eventos.map((e) => ({
+    event_time: `2019-11-01T${hhmmss(hora * 3600 + e.t)}`,
+    event_type: e.event_type, product_id: e.product_id,
+    category_id: e.category_id, category_code: e.category_code,
+    brand: e.brand, price: e.price, user_id: 513903572,
+    user_session: sessao,
+  }));
+  const r = await fetch(`${API}/session`, {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ events }),
+  });
+  if (!r.ok) throw new Error(`HTTP ${r.status} — ${(await r.text()).slice(0, 160)}`);
+  return r.json();
+}
+
+/* ─── Linha do tempo ────────────────────────────────────────────────── */
+
+function adicionarEvento(e, cartT, hora) {
+  const dentro = e.t > cartT && e.t - cartT <= T_WINDOW;
+  const classe = e.event_type === "cart" ? "cart"
+    : e.event_type === "purchase" ? "purchase"
+      : dentro ? "post" : (e.t > cartT ? "view late" : "view");
+  const div = document.createElement("div");
+  div.className = `ev ${classe}`;
+  div.innerHTML = `
+    <span class="t">${hhmmss(hora * 3600 + e.t)}</span>
+    <span class="tp">${e.event_type}</span>
+    <span class="d">${e.category_code}</span>
+    <span class="p">US$ ${e.price.toFixed(2)}</span>`;
+  $("#tl").appendChild(div);
+  div.scrollIntoView({ block: "nearest" });
+}
+
+function marcador(txt) {
+  const d = document.createElement("div");
+  d.className = "marker";
+  d.textContent = txt;
+  $("#tl").appendChild(d);
+  d.scrollIntoView({ block: "nearest" });
+}
+
+/* ─── Relógio da janela ─────────────────────────────────────────────── */
+
+function zerarRelogio() {
+  $("#bar").className = "bar";
+  $("#bar").firstElementChild.style.width = "0";
+  $("#clock-label").textContent = "janela de decisão";
+  $("#clock-val").textContent = "—";
+}
+
+async function animarRelogio(compraNaJanela, posNaJanela, aCadaSegundo = () => {}) {
+  const barra = $("#bar");
+  const quadros = 40;
+  for (let i = 1; i <= quadros; i++) {
+    const s = Math.round((T_WINDOW * i) / quadros);
+    $("#clock-val").textContent = `${s} s / ${T_WINDOW} s`;
+    barra.firstElementChild.style.width = `${(i / quadros) * 100}%`;
+    aCadaSegundo(s);
+    await esperar(CLOCK_MS / quadros);
+  }
+  if (compraNaJanela) {
+    barra.className = "bar cancel";
+    $("#clock-label").textContent = "compra dentro da janela — disparo cancelado";
+  } else if (posNaJanela === 0) {
+    barra.className = "bar cancel";
+    $("#clock-label").textContent = "nenhum evento após o carrinho — sessão abandonada";
+  } else {
+    barra.className = "bar done";
+    $("#clock-label").textContent = `janela fechada · ${posNaJanela} evento(s) na janela`;
+  }
+}
+
+/* ─── Painel de decisão ─────────────────────────────────────────────── */
+
+function mostrarDecisao(c, cen, compraNaJanela, posNaJanela) {
+  if (!c) {
+    const cartT = cen.eventos.find((e) => e.event_type === "cart").t;
+    const compraT = cen.eventos.find((e) => e.event_type === "purchase");
+    const atraso = compraT ? compraT.t - cartT : null;
+    const motivo = compraNaJanela
+      ? `A compra aconteceu ${atraso} s após o carrinho, dentro da janela de ${T_WINDOW} s. `
+        + "Quem converte sozinho sai da população de disparo — intervir aqui seria dar "
+        + "desconto a quem já ia comprar."
+      : posNaJanela === 0
+        ? "Nenhum evento depois do carrinho dentro da janela: a sessão simplesmente terminou, e não há o que interromper."
+        : "A sessão não reuniu as condições de disparo.";
+    $("#out").innerHTML = `
+      <div class="verdict skipped">
+        <div class="vd-tag">Sem decisão</div>
+        <div class="vd-title">Sessão não pontuada</div>
+        <div class="vd-why">${motivo}</div>
+      </div>
+      <div class="rows">
+        ${linha("Resposta da API", "null", "nil")}
+        ${linha("Modelo foi chamado?", "não")}
+        ${linha("Sessão (GET /session/{id})", consulta())}
+      </div>`;
+    return;
+  }
+
+  const [titulo, acao] = ROTULO[c.action] ?? [c.action, "—"];
+  const pct = (c.p_abandon * 100).toFixed(1);
+  const faixa = c.action === "strong_intervention" ? "acima de θ₁ = 0,914"
+    : c.action === "moderate_intervention" ? "entre θ₂ = 0,843 e θ₁ = 0,914"
+      : "abaixo de θ₂ = 0,843";
+
+  $("#out").innerHTML = `
+    <div class="verdict ${c.action}">
+      <div class="vd-tag">${titulo}</div>
+      <div class="vd-title">${acao}</div>
+      <div class="vd-why">Risco de abandono ${pct}% — ${faixa}.
+        ${c.recommended_product_id
+    ? "Uma regra de associação casou com o carrinho, então há produto concreto a oferecer."
+    : "Nenhuma regra do M2 cobre esta categoria: a ação sai sem produto complementar."}</div>
+    </div>
+
+    <div class="rows">
+      ${linha("Risco de abandono", `${pct}%`, "big")}
+      ${linha("Nível de ação", c.action)}
+      ${linha("Categoria recomendada", c.consequent?.join(", ") || "nenhuma",
+    c.consequent ? "" : "nil")}
+      ${linha("Produto recomendado", c.recommended_product_id ?? "nenhum",
+    c.recommended_product_id ? "" : "nil")}
+      ${linha("Score NBA", c.nba_score?.toFixed(3) ?? "—", c.nba_score ? "" : "nil")}
+      ${linha("Variável dominante", c.dominant_feature ?? "—")}
+      ${linha("Sessão (GET /session/{id})", consulta())}
+    </div>
+
+    <h2>Contribuições SHAP</h2>
+    ${shap(c.shap_values, c.dominant_feature)}
+
+    <details>
+      <summary>Resposta completa da API</summary>
+      <pre>${JSON.stringify(c, null, 2)}</pre>
+    </details>`;
+}
+
+/** Id da sessão com link para a consulta na API. */
+function consulta() {
+  return `<a href="${API}/session/${ultimaSessao}" target="_blank" rel="noopener">${ultimaSessao}</a>`;
+}
+
+function linha(k, v, cls = "") {
+  return `<div class="row"><span class="k">${k}</span><span class="v ${cls}">${v}</span></div>`;
+}
+
+/** Oito maiores contribuições, com a escala simétrica em torno de zero. */
+function shap(valores, dominante) {
+  if (!valores?.length) return "";
+  const pares = valores.map((v, i) => ({ nome: FEATURES[i] ?? `f${i}`, v }))
+    .sort((a, b) => Math.abs(b.v) - Math.abs(a.v)).slice(0, 8);
+  const max = Math.max(...pares.map((p) => Math.abs(p.v))) || 1;
+  return `<div class="shap">${pares.map((p) => {
+    const largura = (Math.abs(p.v) / max) * 50;
+    const cor = p.v >= 0 ? "var(--shap-pos)" : "var(--shap-neg)";
+    const lado = p.v >= 0 ? `left:50%;width:${largura}%` : `right:50%;width:${largura}%`;
+    const peso = p.nome === dominante ? "color:var(--text)" : "";
+    return `<div class="sh">
+      <span class="n" style="${peso}">${p.nome}</span>
+      <span class="track"><i style="${lado};background:${cor}"></i></span>
+      <span class="val">${p.v >= 0 ? "+" : ""}${p.v.toFixed(3)}</span>
+    </div>`;
+  }).join("")}</div>`;
+}
+
+/* ─── Métricas ──────────────────────────────────────────────────────── */
+
+async function atualizarMetricas() {
+  try {
+    const m = await (await fetch(`${API}/metrics`)).json();
+    const a = m.actions ?? {};
+    $("#metrics").innerHTML = [
+      ["sessões", m.total_sessions],
+      ["pontuadas", m.eligible],
+      ["forte", a.strong_intervention],
+      ["moderada", a.moderate_intervention],
+      ["sem ação", a.no_intervention],
+      ["converteram", m.purchased],
+    ].map(([k, v]) => `<span>${k} <b>${v ?? 0}</b></span>`).join("");
+    $("#metrics").hidden = false;
+  } catch { /* métricas são acessórias — não travam a demonstração */ }
+}
+
+iniciar();
+</script>
+</body>
+</html>
