@@ -1,0 +1,92 @@
+{
+  "events": [
+    {
+      "event_time": "2019-11-01T15:00:00",
+      "event_type": "view",
+      "product_id": 2900719,
+      "category_id": "2053013554776244595",
+      "category_code": "appliances.kitchen.microwave",
+      "brand": "samsung",
+      "price": 228.83,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    },
+    {
+      "event_time": "2019-11-01T15:00:31",
+      "event_type": "view",
+      "product_id": 2900719,
+      "category_id": "2053013554776244595",
+      "category_code": "appliances.kitchen.microwave",
+      "brand": "samsung",
+      "price": 228.83,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    },
+    {
+      "event_time": "2019-11-01T15:03:21",
+      "event_type": "view",
+      "product_id": 2900049,
+      "category_id": "2053013554776244595",
+      "category_code": "appliances.kitchen.microwave",
+      "brand": "kaiser",
+      "price": 270.28,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    },
+    {
+      "event_time": "2019-11-01T15:03:50",
+      "event_type": "view",
+      "product_id": 2900894,
+      "category_id": "2053013554776244595",
+      "category_code": "appliances.kitchen.microwave",
+      "brand": "redmond",
+      "price": 277.97,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    },
+    {
+      "event_time": "2019-11-01T15:08:23",
+      "event_type": "view",
+      "product_id": 5100376,
+      "category_id": "2053013553341792533",
+      "category_code": "electronics.clocks",
+      "brand": "xiaomi",
+      "price": 69.44,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    },
+    {
+      "event_time": "2019-11-01T15:09:50",
+      "event_type": "cart",
+      "product_id": 5100376,
+      "category_id": "2053013553341792533",
+      "category_code": "electronics.clocks",
+      "brand": "xiaomi",
+      "price": 69.44,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    },
+    {
+      "event_time": "2019-11-01T15:10:40",
+      "event_type": "view",
+      "product_id": 5100376,
+      "category_id": "2053013553341792533",
+      "category_code": "electronics.clocks",
+      "brand": "xiaomi",
+      "price": 69.44,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    },
+    {
+      "event_time": "2019-11-01T15:11:51",
+      "event_type": "view",
+      "product_id": 5100376,
+      "category_id": "2053013553341792533",
+      "category_code": "electronics.clocks",
+      "brand": "xiaomi",
+      "price": 69.44,
+      "user_id": 513903572,
+      "user_session": "09f52458-e452-4ae9-8f8f-75ee3b6f77da"
+    }
+  ]
+}

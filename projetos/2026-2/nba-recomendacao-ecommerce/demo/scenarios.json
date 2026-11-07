@@ -1,0 +1,354 @@
+{
+  "_comentario": "Fonte única dos cenários da demonstração. São SESSÕES REAIS extraídas de dataset/2019-Nov.csv — product_id, price, brand, category_id e os intervalos entre eventos são os do dataset; só o timestamp absoluto foi normalizado para offsets em segundos (campo `t`) a partir do primeiro evento. `sessao_original` guarda o user_session de origem, para auditoria. Consumido pelo demo.html, pelos exemplos do Swagger em POST /session e por tests/test_api_demo.py.",
+  "cenarios": [
+    {
+      "id": "cupom",
+      "titulo": "Carrinho em smartwatch — cupom e produto",
+      "resumo": "Sessão real: o usuário olha micro-ondas, muda para relógios, põe um no carrinho e quase não volta a navegar. Risco 92,6%, acima de θ₁ — cupom. A categoria do carrinho é antecedente de uma regra do M2, então há também um produto concreto a oferecer.",
+      "sessao_original": "09f52458-e452-4ae9-8f8f-75ee3b6f77da",
+      "hora_base": 15,
+      "esperado": {
+        "action": "strong_intervention",
+        "tem_produto": true
+      },
+      "eventos": [
+        {
+          "t": 0,
+          "event_type": "view",
+          "product_id": 2900719,
+          "category_id": "2053013554776244595",
+          "category_code": "appliances.kitchen.microwave",
+          "brand": "samsung",
+          "price": 228.83
+        },
+        {
+          "t": 31,
+          "event_type": "view",
+          "product_id": 2900719,
+          "category_id": "2053013554776244595",
+          "category_code": "appliances.kitchen.microwave",
+          "brand": "samsung",
+          "price": 228.83
+        },
+        {
+          "t": 201,
+          "event_type": "view",
+          "product_id": 2900049,
+          "category_id": "2053013554776244595",
+          "category_code": "appliances.kitchen.microwave",
+          "brand": "kaiser",
+          "price": 270.28
+        },
+        {
+          "t": 230,
+          "event_type": "view",
+          "product_id": 2900894,
+          "category_id": "2053013554776244595",
+          "category_code": "appliances.kitchen.microwave",
+          "brand": "redmond",
+          "price": 277.97
+        },
+        {
+          "t": 503,
+          "event_type": "view",
+          "product_id": 5100376,
+          "category_id": "2053013553341792533",
+          "category_code": "electronics.clocks",
+          "brand": "xiaomi",
+          "price": 69.44
+        },
+        {
+          "t": 590,
+          "event_type": "cart",
+          "product_id": 5100376,
+          "category_id": "2053013553341792533",
+          "category_code": "electronics.clocks",
+          "brand": "xiaomi",
+          "price": 69.44
+        },
+        {
+          "t": 640,
+          "event_type": "view",
+          "product_id": 5100376,
+          "category_id": "2053013553341792533",
+          "category_code": "electronics.clocks",
+          "brand": "xiaomi",
+          "price": 69.44
+        },
+        {
+          "t": 711,
+          "event_type": "view",
+          "product_id": 5100376,
+          "category_id": "2053013553341792533",
+          "category_code": "electronics.clocks",
+          "brand": "xiaomi",
+          "price": 69.44
+        }
+      ]
+    },
+    {
+      "id": "converteu",
+      "titulo": "Comprou sozinho — sistema não age",
+      "resumo": "Sessão real: cinco smartphones comparados, carrinho, e a compra 70 s depois — dentro da janela de 120 s. O disparo é cancelado: quem converte sozinho não recebe intervenção.",
+      "sessao_original": "189114db-9777-4291-9d26-4b735a34977b",
+      "hora_base": 14,
+      "esperado": {
+        "action": null,
+        "tem_produto": false
+      },
+      "eventos": [
+        {
+          "t": 0,
+          "event_type": "view",
+          "product_id": 1005105,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "apple",
+          "price": 1347.99
+        },
+        {
+          "t": 13,
+          "event_type": "view",
+          "product_id": 1005105,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "apple",
+          "price": 1347.99
+        },
+        {
+          "t": 54,
+          "event_type": "view",
+          "product_id": 1005160,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "xiaomi",
+          "price": 210.7
+        },
+        {
+          "t": 85,
+          "event_type": "view",
+          "product_id": 1004250,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "apple",
+          "price": 769.57
+        },
+        {
+          "t": 124,
+          "event_type": "view",
+          "product_id": 1005121,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "apple",
+          "price": 968.07
+        },
+        {
+          "t": 177,
+          "event_type": "view",
+          "product_id": 1005212,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 191.26
+        },
+        {
+          "t": 200,
+          "event_type": "cart",
+          "product_id": 1005212,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 191.26
+        },
+        {
+          "t": 270,
+          "event_type": "purchase",
+          "product_id": 1005212,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 191.26
+        }
+      ]
+    },
+    {
+      "id": "sem_regra",
+      "titulo": "Risco moderado, sem regra aplicável — ação sem produto",
+      "resumo": "Sessão real com carrinho em smartphone, categoria que não é antecedente de nenhuma das quatro regras do M2. Risco 89,0%, entre θ₂ (84,3%) e θ₁ (91,4%): intervenção moderada, sem produto complementar.",
+      "sessao_original": "451c2d74-2b4a-46d6-9489-bd415e95c3f4",
+      "hora_base": 11,
+      "esperado": {
+        "action": "moderate_intervention",
+        "tem_produto": false
+      },
+      "eventos": [
+        {
+          "t": 0,
+          "event_type": "view",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 241.98
+        },
+        {
+          "t": 108,
+          "event_type": "view",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 241.98
+        },
+        {
+          "t": 154,
+          "event_type": "view",
+          "product_id": 1004766,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 242.22
+        },
+        {
+          "t": 172,
+          "event_type": "view",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 241.98
+        },
+        {
+          "t": 240,
+          "event_type": "cart",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 241.98
+        },
+        {
+          "t": 266,
+          "event_type": "view",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 241.98
+        },
+        {
+          "t": 600,
+          "event_type": "view",
+          "product_id": 1004768,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 242.11
+        },
+        {
+          "t": 627,
+          "event_type": "view",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 241.98
+        }
+      ]
+    },
+    {
+      "id": "sem_risco",
+      "titulo": "Navegação tranquila — sem intervenção",
+      "resumo": "Sessão real de comparação entre quatro marcas de smartphone. Risco 43,7%, bem abaixo de θ₂ — o motor pontua e decide não incomodar.",
+      "sessao_original": "32c5cfeb-10d9-478b-a26a-2a288a020b77",
+      "hora_base": 8,
+      "esperado": {
+        "action": "no_intervention",
+        "tem_produto": false
+      },
+      "eventos": [
+        {
+          "t": 0,
+          "event_type": "view",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 242.01
+        },
+        {
+          "t": 46,
+          "event_type": "view",
+          "product_id": 1004767,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "samsung",
+          "price": 242.01
+        },
+        {
+          "t": 386,
+          "event_type": "view",
+          "product_id": 1004838,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "oppo",
+          "price": 178.87
+        },
+        {
+          "t": 434,
+          "event_type": "view",
+          "product_id": 1005160,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "xiaomi",
+          "price": 210.82
+        },
+        {
+          "t": 529,
+          "event_type": "view",
+          "product_id": 1005160,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "xiaomi",
+          "price": 210.82
+        },
+        {
+          "t": 556,
+          "event_type": "view",
+          "product_id": 1004785,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "huawei",
+          "price": 265.72
+        },
+        {
+          "t": 653,
+          "event_type": "cart",
+          "product_id": 1004785,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "huawei",
+          "price": 265.72
+        },
+        {
+          "t": 660,
+          "event_type": "cart",
+          "product_id": 1004785,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "huawei",
+          "price": 265.72
+        },
+        {
+          "t": 842,
+          "event_type": "view",
+          "product_id": 1004785,
+          "category_id": "2053013555631882655",
+          "category_code": "electronics.smartphone",
+          "brand": "huawei",
+          "price": 265.72
+        }
+      ]
+    }
+  ]
+}

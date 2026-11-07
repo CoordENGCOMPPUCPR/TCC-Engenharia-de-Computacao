@@ -1,0 +1,86 @@
+{
+  "population": "disparo (T=120s + atividade), outubro",
+  "n": 73101,
+  "features": [
+    {
+      "rank": 1,
+      "feature": "n_events_after_cart",
+      "mean_abs_shap": 0.4861
+    },
+    {
+      "rank": 2,
+      "feature": "n_views_after_cart",
+      "mean_abs_shap": 0.4096
+    },
+    {
+      "rank": 3,
+      "feature": "idle_time_after_cart",
+      "mean_abs_shap": 0.1881
+    },
+    {
+      "rank": 4,
+      "feature": "hour_of_day",
+      "mean_abs_shap": 0.0897
+    },
+    {
+      "rank": 5,
+      "feature": "cart_item_brand",
+      "mean_abs_shap": 0.0889
+    },
+    {
+      "rank": 6,
+      "feature": "n_categories",
+      "mean_abs_shap": 0.085
+    },
+    {
+      "rank": 7,
+      "feature": "dominant_brand",
+      "mean_abs_shap": 0.0802
+    },
+    {
+      "rank": 8,
+      "feature": "price_ratio",
+      "mean_abs_shap": 0.0749
+    },
+    {
+      "rank": 9,
+      "feature": "cart_item_price",
+      "mean_abs_shap": 0.0647
+    },
+    {
+      "rank": 10,
+      "feature": "views_of_cart_item",
+      "mean_abs_shap": 0.052
+    },
+    {
+      "rank": 11,
+      "feature": "n_categories_after_cart",
+      "mean_abs_shap": 0.0495
+    },
+    {
+      "rank": 12,
+      "feature": "nav_depth",
+      "mean_abs_shap": 0.0404
+    },
+    {
+      "rank": 13,
+      "feature": "inter_event_time_mean",
+      "mean_abs_shap": 0.0393
+    },
+    {
+      "rank": 14,
+      "feature": "cart_view_ratio",
+      "mean_abs_shap": 0.0367
+    },
+    {
+      "rank": 15,
+      "feature": "session_duration",
+      "mean_abs_shap": 0.0335
+    },
+    {
+      "rank": 16,
+      "feature": "cart_item_category_top",
+      "mean_abs_shap": 0.0241
+    }
+  ]
+}

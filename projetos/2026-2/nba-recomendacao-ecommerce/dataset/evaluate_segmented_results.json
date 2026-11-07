@@ -1,0 +1,38 @@
+{
+  "source": "2019-Oct.csv",
+  "method": "5-fold StratifiedKFold out-of-fold predictions",
+  "n_sessions": 73101,
+  "pct_abandon": 78.4,
+  "auc_roc_total": 0.743,
+  "coverage_total": 50.0,
+  "segments": [
+    {
+      "segment": "= 5",
+      "n": 16283,
+      "pct_abandon": 79.5,
+      "auc_roc": 0.7395,
+      "coverage": 53.0
+    },
+    {
+      "segment": "6\u201310",
+      "n": 34940,
+      "pct_abandon": 78.8,
+      "auc_roc": 0.7448,
+      "coverage": 51.5
+    },
+    {
+      "segment": "11\u201320",
+      "n": 15848,
+      "pct_abandon": 77.6,
+      "auc_roc": 0.7445,
+      "coverage": 47.0
+    },
+    {
+      "segment": "> 20",
+      "n": 6030,
+      "pct_abandon": 75.4,
+      "auc_roc": 0.7294,
+      "coverage": 41.0
+    }
+  ]
+}

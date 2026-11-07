@@ -1,0 +1,123 @@
+{
+  "source": "2019-Nov.csv",
+  "trigger": {
+    "t_window_s": 120.0,
+    "require_activity": true
+  },
+  "thresholds": {
+    "theta_1": 0.9136878708785061,
+    "theta_2": 0.8434451147448246
+  },
+  "n_cart_sessions": 1743342,
+  "exclusion_reasons": {
+    "eligible_by_times": 800621,
+    "purchased_within_window": 371967,
+    "user_left": 570754
+  },
+  "n_sessions": 274954,
+  "n_abandon": 234269,
+  "pct_abandon": 85.2,
+  "auc_roc_total": 0.7162,
+  "at_theta_1": {
+    "theta": 0.9137,
+    "action_rate": 22.0,
+    "precision": 95.3,
+    "recall": 24.6
+  },
+  "at_theta_2": {
+    "theta": 0.8434,
+    "action_rate": 53.5,
+    "precision": 92.8,
+    "recall": 58.3
+  },
+  "calibration": {
+    "brier": 0.1208,
+    "ece": 0.0494,
+    "reliability": [
+      {
+        "p_mean": 0.49,
+        "observed": 0.654,
+        "n": 27496
+      },
+      {
+        "p_mean": 0.631,
+        "observed": 0.717,
+        "n": 27495
+      },
+      {
+        "p_mean": 0.728,
+        "observed": 0.783,
+        "n": 27495
+      },
+      {
+        "p_mean": 0.796,
+        "observed": 0.834,
+        "n": 27496
+      },
+      {
+        "p_mean": 0.838,
+        "observed": 0.877,
+        "n": 27495
+      },
+      {
+        "p_mean": 0.867,
+        "observed": 0.897,
+        "n": 27495
+      },
+      {
+        "p_mean": 0.889,
+        "observed": 0.918,
+        "n": 27496
+      },
+      {
+        "p_mean": 0.908,
+        "observed": 0.93,
+        "n": 27495
+      },
+      {
+        "p_mean": 0.927,
+        "observed": 0.948,
+        "n": 27495
+      },
+      {
+        "p_mean": 0.951,
+        "observed": 0.961,
+        "n": 27496
+      }
+    ]
+  },
+  "segments": [
+    {
+      "segment": "= 5",
+      "n": 53599,
+      "pct_abandon": 85.7,
+      "auc_roc": 0.7316,
+      "action_rate": 57.2,
+      "strong_rate": 26.0
+    },
+    {
+      "segment": "6\u201310",
+      "n": 122994,
+      "pct_abandon": 85.4,
+      "auc_roc": 0.7217,
+      "action_rate": 55.5,
+      "strong_rate": 23.2
+    },
+    {
+      "segment": "11\u201320",
+      "n": 66060,
+      "pct_abandon": 85.0,
+      "auc_roc": 0.7075,
+      "action_rate": 51.4,
+      "strong_rate": 19.2
+    },
+    {
+      "segment": "> 20",
+      "n": 32301,
+      "pct_abandon": 83.9,
+      "auc_roc": 0.6859,
+      "action_rate": 44.3,
+      "strong_rate": 16.5
+    }
+  ]
+}
