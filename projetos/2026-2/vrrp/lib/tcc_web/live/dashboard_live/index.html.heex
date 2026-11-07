@@ -1,0 +1,122 @@
+<div class="w-full h-full p-6">
+  <div class="max-w-7xl mx-auto bg-white rounded-xl border-2 border-stone-300 shadow-xl p-6 dark:text-white dark:bg-slate-900 dark:border-slate-800">
+    <div class="flex items-center justify-between pb-6">
+      <div class="ml-auto">
+        <Layouts.theme_toggle />
+      </div>
+    </div>
+
+    <%= if Enum.empty?(@devices) do %>
+      <div class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="flex h-20 w-20 items-center justify-center rounded-full bg-stone-100 border-2 border-stone-300 dark:bg-slate-800 dark:border-slate-700 mb-5 shadow-inner">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+            stroke="currentColor"
+            class="w-10 h-10 text-stone-400 dark:text-slate-500"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 9v3.75m0 3.75h.008v.008H12v-.008s0 0 0 0zM12 3.75a8.25 8.25 0 100 16.5 8.25 8.25 0 000-16.5z"
+            />
+          </svg>
+        </div>
+
+        <h2 class="text-xl font-bold text-stone-800 dark:text-stone-100 mb-2">
+          No device found
+        </h2>
+
+        <p class="max-w-md text-sm text-stone-500 dark:text-slate-400 leading-relaxed">
+          There are currently no devices provisioned in the system. Post sensor data to
+          <code class="px-1.5 py-0.5 rounded bg-stone-200 dark:bg-slate-800 font-mono text-xs text-stone-800 dark:text-slate-200">/api/sensors</code>
+          to auto-provision your first device.
+        </p>
+      </div>
+    <% else %>
+      <div class="flex flex-col gap-4 border-b border-stone-200 pb-5 dark:border-slate-800">
+        <div class="flex items-center justify-between">
+          <div>
+            <h1 class="text-2xl font-bold text-stone-900 dark:text-white">
+              {@active_device_name}
+            </h1>
+            <p class="text-xs text-stone-500 dark:text-slate-400 mt-0.5">
+              {@active_device_location}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-1">
+          <div class="flex items-center gap-2 overflow-x-auto pb-1">
+            <%= for device <- @devices do %>
+              <.link
+                patch={~p"/?device_id=#{device.id}"}
+                class={[
+                  "px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 border",
+                  if(device.id == @active_device_id,
+                    do:
+                      "bg-emerald-600 text-white border-emerald-600 shadow-sm dark:bg-emerald-500 dark:border-emerald-500",
+                    else:
+                      "bg-stone-50 text-stone-600 border-stone-200 hover:bg-stone-100 dark:bg-slate-800/80 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700"
+                  )
+                ]}
+              >
+                {device.name}
+              </.link>
+            <% end %>
+          </div>
+          <span class="text-xs text-stone-400 dark:text-slate-500">
+            Showing 9 sensors
+          </span>
+        </div>
+      </div>
+
+      <div
+        id="sensors"
+        phx-update="stream"
+        class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6"
+      >
+        <%= for {dom_id, sensor} <- @streams.sensors do %>
+          <div
+            id={dom_id}
+            phx-click={JS.navigate(~p"/#{sensor.device_id}/sensors/#{sensor.id}")}
+            class="group border-2 border-stone-400 dark:border-slate-700 rounded-lg shadow-md p-5 bg-stone-50 dark:bg-slate-800/50 flex flex-col justify-between transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-xl hover:border-emerald-500 dark:hover:border-emerald-500 cursor-pointer"
+          >
+            <div>
+              <h2 class="text-lg font-bold text-stone-800 dark:text-stone-100 mb-3 flex items-center justify-between transition-colors duration-300 group-hover:text-emerald-600 dark:group-hover:text-emerald-400">
+                <span>{sensor.module}</span>
+              </h2>
+
+              <ul class="space-y-3 text-sm text-stone-700 dark:text-slate-300">
+                <%= if Enum.empty?(sensor.values) do %>
+                  <li class="text-xs text-stone-400 italic">No readings recorded</li>
+                <% else %>
+                  <%= for value <- sensor.values do %>
+                    <li class="flex flex-col border-b border-stone-200 dark:border-slate-700 pb-2 last:border-0 transition-colors duration-200 group-hover:border-stone-300 dark:group-hover:border-slate-600">
+                      <div class="flex justify-between items-center">
+                        <span class="text-stone-500 dark:text-slate-400">
+                          {value.unit.description || value.unit_name} ({value.unit.symbol}):
+                        </span>
+                        <span class="font-bold text-stone-800 dark:text-stone-200 group-hover:text-emerald-700 dark:group-hover:text-emerald-300">
+                          {value.value}
+                        </span>
+                      </div>
+
+                      <!-- Reading Timestamp -->
+                      <div class="flex justify-end items-center gap-1 mt-0.5 text-[10px] text-stone-400 dark:text-slate-500 mr-auto">
+                        <span>Updated:</span>
+                        {Calendar.strftime(value.timestamp, "%Y-%m-%d %H:%M:%S UTC")}
+                      </div>
+                    </li>
+                  <% end %>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

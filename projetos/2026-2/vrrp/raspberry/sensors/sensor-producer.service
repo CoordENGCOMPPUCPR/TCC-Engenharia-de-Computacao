@@ -1,0 +1,14 @@
+[Unit]
+Description=Sensor Data Producer Service
+After=network.target
+
+[Service]
+Type=simple
+User=raspberry
+WorkingDirectory=/home/raspberry/sensors
+ExecStart=/usr/bin/python3 /home/raspberry/sensors/producer.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

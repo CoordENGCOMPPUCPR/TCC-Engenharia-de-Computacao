@@ -1,0 +1,125 @@
+<div class="w-full h-full p-6">
+  <div class="max-w-7xl mx-auto bg-white rounded-xl border-2 border-stone-300 shadow-xl p-6 dark:text-white dark:bg-slate-900 dark:border-slate-800">
+    <div class="flex items-center justify-between pb-6">
+      <.link
+        patch={~p"/?device_id=#{@sensor.device.id}"}
+        class={[
+          "px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 border-2 border-stone-200 dark:text-white dark:bg-slate-900 dark:border-slate-700"
+        ]}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-6"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18"
+          />
+        </svg>
+      </.link>
+      <div class="ml-auto">
+        <Layouts.theme_toggle />
+      </div>
+    </div>
+
+    <div
+      :if={@sensor}
+      class="flex flex-col gap-4 border-b border-stone-200 pb-5 dark:border-slate-800"
+    >
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-stone-900 dark:text-white">
+            {@sensor.device.name}
+          </h1>
+          <p class="text-xs text-stone-500 dark:text-slate-400 mt-0.5">
+            {@sensor.device.location}
+          </p>
+        </div>
+      </div>
+      <div class="flex items-center justify-between pt-1">
+        <div class="flex items-center gap-2 overflow-x-auto pb-1">
+          <span class={[
+            "px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 border",
+            "bg-emerald-600 text-white border-emerald-600 shadow-sm dark:bg-emerald-500 dark:border-emerald-500"
+          ]}>
+            {@sensor.module}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div :if={@sensor} class="mt-6 space-y-8">
+      <div
+        :for={{unit_name, data} <- @paginated_values}
+        class="bg-stone-50 dark:bg-slate-800/50 rounded-lg p-4 border border-stone-200 dark:border-slate-700"
+      >
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-lg font-semibold text-stone-800 dark:text-stone-200 capitalize">
+            Unit Group: <span class="text-emerald-600 dark:text-emerald-400">{unit_name}</span>
+          </h2>
+          <span class="text-xs text-stone-500 dark:text-slate-400">
+            Showing {length(data.entries)} of {data.total_count} entries (Page {data.current_page} of {data.total_pages})
+          </span>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-stone-200 dark:divide-slate-700 text-left text-sm">
+            <thead class="bg-stone-100 dark:bg-slate-800 text-stone-700 dark:text-stone-300">
+              <tr>
+                <th scope="col" class="py-3.5 pl-4 pr-3 text-left font-semibold">Timestamp</th>
+                <th scope="col" class="px-3 py-3.5 text-left font-semibold">Value</th>
+                <th scope="col" class="px-3 py-3.5 text-left font-semibold">Symbol</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-stone-200 dark:divide-slate-700 bg-white dark:bg-slate-900">
+              <tr :for={val <- data.entries} class="hover:bg-stone-50 dark:hover:bg-slate-800/50">
+                <td class="whitespace-nowrap py-3 pl-4 pr-3 text-stone-600 dark:text-stone-300">
+                  {Calendar.strftime(val.timestamp, "%Y-%m-%d %H:%M:%S")}
+                </td>
+                <td class="whitespace-nowrap px-3 py-3 font-medium text-stone-900 dark:text-white">
+                  {val.value}
+                </td>
+                <td class="whitespace-nowrap px-3 py-3 text-stone-500 dark:text-stone-400">
+                  {val.unit && val.unit.symbol}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="flex items-center justify-between pt-4 mt-4 border-t border-stone-200 dark:border-slate-700 text-xs">
+          <button
+            type="button"
+            phx-click="change_page"
+            phx-value-unit={unit_name}
+            phx-value-page={data.current_page - 1}
+            disabled={data.current_page <= 1}
+            class="px-3 py-1.5 rounded bg-white dark:bg-slate-900 border border-stone-300 dark:border-slate-700 font-medium text-stone-700 dark:text-stone-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-stone-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Previous
+          </button>
+
+          <span class="text-stone-600 dark:text-stone-400">
+            Page <strong>{data.current_page}</strong> of <strong>{data.total_pages}</strong>
+          </span>
+
+          <button
+            type="button"
+            phx-click="change_page"
+            phx-value-unit={unit_name}
+            phx-value-page={data.current_page + 1}
+            disabled={data.current_page >= data.total_pages}
+            class="px-3 py-1.5 rounded bg-white dark:bg-slate-900 border border-stone-300 dark:border-slate-700 font-medium text-stone-700 dark:text-stone-300 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-stone-100 dark:hover:bg-slate-800 transition-colors"
+          >
+            Next
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
