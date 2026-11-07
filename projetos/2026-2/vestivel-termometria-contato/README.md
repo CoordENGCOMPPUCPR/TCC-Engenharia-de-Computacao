@@ -108,6 +108,7 @@ python app.py
 ```
 
 A API fica em `http://localhost:5000`. Em um banco local sem SSL, defina também `set DB_SSLMODE=disable`. Em produção, o comando é `gunicorn app:app`.
+Em um banco do Aiven, a migração também exige `--confirmo-producao`.
 
 **Frontend (`src/frontend/`)**
 
@@ -153,6 +154,7 @@ python scripts/fase1c.py rampa
 ```
 
 Os resultados são gravados em `docs/resultados/fase1c/`. Esses experimentos usam `sim/`, com premissas sintéticas, e não substituem a validação em animais.
+
 ---
 
 ## Histórico de Versões (Marcos CDPT / IOPT)
@@ -160,4 +162,4 @@ Os resultados são gravados em `docs/resultados/fase1c/`. Esses experimentos usa
 | Versão | Etapa | Data | Descrição |
 | :--- | :--- | :--- | :--- |
 | `v0.5.0` | IOPT — 3º Bim (Protótipo) | 06/10/2026 | Protótipo funcional da cadeia de telemetria e roteiro de testes |
-| `v1.0.0` | IOPT — 4º Bim (Implementação Final) | 06/11/2026 | Versão final do código, validada em bancada e com dados sintéticos |
+| `v1.0.0` | IOPT — 4º Bim (Implementação Final) | 06/11/2026 | Versão final do código; telemetria validada em bancada e detector avaliado com dados sintéticos |
