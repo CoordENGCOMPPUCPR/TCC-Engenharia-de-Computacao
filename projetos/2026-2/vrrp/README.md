@@ -6,7 +6,7 @@
 | :--- | :--- |
 | **Curso** | Engenharia de Computação |
 | **Instituição** | PUCPR — Escola Politécnica |
-| **Ano / Semestre** | 2026/1 |
+| **Ano / Semestre** | 2026/2 |
 | **Disciplina** | CDPT (Concepção e Design de Projeto Transformador) / IOPT (Implementação e Operação de Projeto Transformador) |
 | **Estudante(s)** | Victor Romano Ribeiro Pizzato |
 | **Orientador(a)** | Valter Klein Junior |
