@@ -1,0 +1,21 @@
+{
+  "name": "tcc-mastite-frontend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Painel web de telemetria térmica dos membros pélvicos de bovinos (front-end do TCC)",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "mock-api": "node scripts/mock-api.mjs",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "chart.js": "^4.5.1"
+  },
+  "devDependencies": {
+    "vite": "^7.3.6",
+    "vitest": "^3.2.4"
+  }
+}

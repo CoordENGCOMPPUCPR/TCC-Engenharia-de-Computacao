@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Painel de monitoramento térmico da pata da vaca" />
+    <title>Monitoramento da Pata</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐄</text></svg>" />
+  </head>
+  <body>
+    <header class="topo">
+      <div class="topo-inner">
+        <a href="#/" class="marca">
+          <h1>Monitoramento da Pata</h1>
+          <span class="sutil">Telemetria térmica da Pata da Vaca</span>
+        </a>
+        <div class="topo-acoes">
+          <span id="status" class="status" aria-live="polite"></span>
+          <button type="button" id="btn-atualizar" class="btn">Atualizar</button>
+        </div>
+      </div>
+    </header>
+    <main id="conteudo" class="conteudo"></main>
+    <footer id="rodape" class="rodape-geral"></footer>
+    <noscript>Este painel precisa de JavaScript habilitado.</noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
