@@ -1,0 +1,9 @@
+[wokwi]
+name = "ESP32 Water Monitor"
+platform = "platformio"
+board = "esp32dev"
+project = "."
+platformio_ini = "platformio.ini"
+open = "diagram.json"
+firmware = ".pio/build/esp32dev/firmware-merged.bin"
+elf = ".pio/build/esp32dev/firmware.elf"

@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": 9.6, "left": 168.04, "attrs": { "firmwareOffset": "0" } },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 52.25,
+      "left": 104.2,
+      "rotate": 180,
+      "attrs": { "value": "4700" }
+    },
+    { "type": "wokwi-ds18b20", "id": "temp1", "top": -39.53, "left": 61.68, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot1", "top": -68.5, "left": -182.6, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot2", "top": 46.7, "left": -144.2, "attrs": {} },
+    { "type": "wokwi-potentiometer", "id": "pot3", "top": 152.3, "left": -86.6, "attrs": {} }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "temp1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "temp1:DQ", "esp:14", "green", [ "v0" ] ],
+    [ "temp1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "r2:1", "esp:3V3", "green", [ "v0" ] ],
+    [ "r2:2", "esp:14", "green", [ "v0" ] ],
+    [ "pot1:VCC", "esp:3V3", "red", [ "v0" ] ],
+    [ "pot2:VCC", "esp:3V3", "red", [ "v19.2", "h47.2", "v-96" ] ],
+    [ "pot3:VCC", "esp:3V3", "red", [ "v9.6", "h66.4", "v-192" ] ],
+    [ "pot3:GND", "esp:GND.1", "black", [ "v28.8", "h153.6", "v-86.4" ] ],
+    [ "pot2:GND", "esp:GND.1", "black", [ "v153.6", "h240", "v-105.6" ] ],
+    [ "pot2:SIG", "esp:35", "purple", [ "v28.8", "h76.4", "v-57.6" ] ],
+    [ "pot3:SIG", "esp:32", "cyan", [ "v19.2", "h95.6", "v-144" ] ],
+    [ "pot1:SIG", "esp:34", "yellow", [ "v28.8", "h124.4", "v48" ] ],
+    [ "pot1:GND", "esp:GND.1", "black", [ "v288", "h297.6", "v-124.8" ] ]
+  ],
+  "dependencies": {}
+}
