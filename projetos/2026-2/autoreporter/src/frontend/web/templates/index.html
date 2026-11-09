@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoreporter - Painel do Organizador</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #09090b;
+            --bg-secondary: #121214;
+            --border-color: #27272a;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --accent: #ffffff;
+            --success: #ffffff;
+            --warning: #71717a;
+            --danger: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            padding: 2.5rem;
+            min-height: 100vh;
+        }
+
+        header {
+            max-width: 1400px;
+            margin: 0 auto 3rem auto;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.02em;
+            color: var(--accent);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .usb-badge {
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease;
+        }
+
+        .usb-connected {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .usb-disconnected {
+            border-color: #3f3f46;
+            color: var(--text-muted);
+            border-style: dashed;
+        }
+
+        .usb-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .usb-connected .usb-dot {
+            background-color: var(--accent);
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .usb-disconnected .usb-dot {
+            background-color: #3f3f46;
+        }
+
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 3rem;
+        }
+
+        @media (max-width: 1100px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        h2 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Tabs para o Painel Principal */
+        .tab-nav {
+            display: flex;
+            gap: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem 1.25rem;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+
+        .tab-btn:hover:not(.active) {
+            border-color: var(--text-main);
+            color: var(--text-main);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Mesas */
+        .station-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .station-card {
+            background-color: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .station-info h3 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .station-info p {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Brackets Tree */
+        .bracket-wrapper {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 3rem 1.5rem;
+            background: rgba(255, 255, 255, 0.005);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 480px;
+        }
+
+        .bracket-round {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            gap: 4rem;
+        }
+
+        .bracket-match {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 1rem;
+            width: 270px;
+            transition: all 0.2s ease;
+        }
+
+        .bracket-match:hover {
+            border-color: var(--text-main);
+        }
+
+        .bracket-match-header {
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 0.6rem;
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+        }
+
+        .bracket-team-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.35rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.2rem;
+            border: 1px solid transparent;
+        }
+
+        .bracket-team-row.winner {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: var(--border-color);
+            font-weight: 700;
+        }
+
+        .bracket-team-name {
+            font-size: 0.85rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 175px;
+        }
+
+        .bracket-score {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .bracket-connectors {
+            font-size: 1.5rem;
+            color: var(--border-color);
+            user-select: none;
+        }
+
+        /* Botões */
+        .btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background: var(--accent);
+            color: var(--bg-primary);
+            border-color: var(--accent);
+        }
+
+        .btn-danger {
+            color: var(--text-muted);
+            border-color: #3f3f46;
+        }
+
+        .btn-danger:hover {
+            background: #ef4444;
+            color: white;
+            border-color: #ef4444;
+        }
+
+        /* Formulários */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+        }
+
+        .form-group label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .form-control {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.6rem;
+            color: var(--text-main);
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--text-main);
+        }
+
+        /* Modais */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 2rem;
+            width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        .modal-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .close-btn {
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-muted);
+        }
+
+        /* Listas e Histórico */
+        .player-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.6rem;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            cursor: pointer;
+        }
+
+        .player-row:hover {
+            border-color: var(--border-color);
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        .player-row.selected {
+            background: rgba(255, 255, 255, 0.03);
+            border-color: var(--text-main);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .history-table th, .history-table td {
+            border: 1px solid var(--border-color);
+            padding: 0.4rem;
+            text-align: left;
+        }
+
+        .history-table th {
+            background: rgba(255,255,255,0.02);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h1>Autoreporter</h1>
+            <div class="subtitle">Console de Controle Monocromático</div>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+            <div id="usb-status" class="usb-badge usb-disconnected">
+                <span class="usb-dot"></span>
+                <span id="usb-text">COORD: OFF</span>
+            </div>
+            <button onclick="confirmReset()" class="btn btn-danger">Resetar Campeonato</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- LADO ESQUERDO: Mesas e Controle de Acesso -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Painel de Mesas -->
+            <section class="panel">
+                <h2>Mesas Ativas</h2>
+                <div id="station-list" class="station-grid">
+                    <!-- Dinâmico via SSE -->
+                </div>
+            </section>
+
+            <!-- Status do Torneio (Reg / In_Progress) -->
+            <section class="panel">
+                <h2>Ciclo de Vida</h2>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.8rem;">
+                        <span style="color: var(--text-muted); text-transform: uppercase;">Estado Atual:</span>
+                        <span id="event-status-badge" style="font-weight: 700; text-transform: uppercase;">A DEFINIR</span>
+                    </div>
+                    <button id="btn-init-bracket" onclick="initializeBracket()" class="btn" style="width: 100%;">Inicializar Chave</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- LADO DIREITO: Brackets e Vínculos (Tabs) -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="tab-nav">
+                <button class="tab-btn active" onclick="switchTab('tab-bracket')">Chave do Torneio</button>
+                <button class="tab-btn" onclick="switchTab('tab-vinculos'); loadVinculosData();">Vínculos & Mesas</button>
+                <button class="tab-btn" onclick="switchTab('tab-players'); loadPlayersList();">CRUD Jogadores</button>
+            </div>
+
+            <!-- Conteúdo 1: Chave de Brackets -->
+            <div id="tab-bracket" class="tab-content active">
+                <div class="bracket-wrapper">
+                    <div class="bracket-round">
+                        <div class="bracket-match" id="match-card-1"></div>
+                        <div class="bracket-match" id="match-card-2"></div>
+                    </div>
+                    <div class="bracket-connectors">➔</div>
+                    <div class="bracket-round">
+                        <div class="bracket-match" id="match-card-3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo 2: Vínculos e Mesas -->
+            <div id="tab-vinculos" class="tab-content panel">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                    <!-- Coluna Vincular Jogador / Tag -->
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <h3>Vincular Jogador a Tag</h3>
+                        <form id="form-bind-player-tag" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div class="form-group">
+                                <label for="select-bind-player">Competidor</label>
+                                <select id="select-bind-player" class="form-control" style="background: var(--bg-primary);" required>
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="input-bind-tag">Tag RFID UID</label>
+                                <input type="text" id="input-bind-tag" class="form-control" placeholder="A1B2C3D4" required>
+                            </div>
+                            <button type="submit" class="btn">Vincular Tag</button>
+                        </form>
+                    </div>
+
+                    <!-- Coluna Vincular Mesa / Nó -->
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <h3>Vincular Mesa a Nós Repórteres</h3>
+                        <form id="form-bind-station-node" style="display: flex; flex-direction: column; gap: 0.75rem;">
+                            <div class="form-group">
+                                <label for="select-bind-station">Mesa</label>
+                                <select id="select-bind-station" class="form-control" style="background: var(--bg-primary);" required>
+                                    <option value="">Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="select-bind-node">Nó Repórter</label>
+                                <select id="select-bind-node" class="form-control" style="background: var(--bg-primary);" required>
+                                    <option value="">Nenhum (Desvincular)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn">Vincular Hardware</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conteúdo 3: CRUD Jogadores -->
+            <div id="tab-players" class="tab-content panel" style="display: none;">
+                <div style="display: grid; grid-template-columns: 280px 1fr; gap: 2rem;">
+                    <!-- Lista Lateral de Jogadores -->
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <input type="text" id="search-player" class="form-control" placeholder="Buscar jogador..." oninput="filterPlayersList()">
+                        <div id="players-list-container" style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 380px; overflow-y: auto;">
+                            <!-- Inserido dinamicamente -->
+                        </div>
+                        <button onclick="openNewPlayerForm()" class="btn" style="width: 100%;">Novo Jogador</button>
+                    </div>
+
+                    <!-- Ficha Detalhada / Cadastro -->
+                    <div id="player-detail-panel" style="display: flex; flex-direction: column; gap: 1.5rem; border-left: 1px solid var(--border-color); padding-left: 2rem;">
+                        <h3 id="detail-title">Selecione um jogador</h3>
+                        <form id="form-player-crud" style="display: none; flex-direction: column; gap: 1rem; max-width: 450px;">
+                            <input type="hidden" id="crud-player-id">
+                            <div class="form-group">
+                                <label for="crud-real-name">Nome Real</label>
+                                <input type="text" id="crud-real-name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="crud-nickname">Apelido Gamer</label>
+                                <input type="text" id="crud-nickname" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="crud-tag-uid">Tag RFID UID (Opcional)</label>
+                                <input type="text" id="crud-tag-uid" class="form-control" placeholder="Deixe em branco se não tiver">
+                            </div>
+                            <div style="display: flex; gap: 1rem;">
+                                <button type="submit" class="btn" style="flex: 1;">Salvar Alterações</button>
+                                <button type="button" id="btn-soft-delete" onclick="softDeleteSelectedPlayer()" class="btn btn-danger" style="flex: 1;">Inativar Jogador</button>
+                            </div>
+                        </form>
+
+                        <div id="player-history-container" style="display: none;">
+                            <h4 style="font-size: 0.8rem; text-transform: uppercase; margin-bottom: 0.5rem;">Histórico de Confrontos</h4>
+                            <table class="history-table">
+                               <thead>
+                                   <tr>
+                                       <th>Campeonato</th>
+                                       <th>Confronto</th>
+                                       <th>Placar</th>
+                                       <th>Status</th>
+                                   </tr>
+                               </thead>
+                               <tbody id="player-history-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal de Resultados / DQ -->
+    <div id="action-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-match-title">Partida</h3>
+                <span class="close-btn" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="force-winner-form" style="display: flex; flex-direction: column; gap: 1rem;">
+                <input type="hidden" id="modal-match-id">
+                <div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 1rem; text-align: center;">
+                    <div class="form-group">
+                        <label id="label-player1" style="display: block; margin-bottom: 0.5rem;"></label>
+                        <input type="number" id="force-score1" class="form-control" style="font-size: 1.25rem; text-align: center;" min="0" required>
+                        <button type="button" id="btn-dq-p1" class="btn btn-danger" style="margin-top: 0.5rem; padding: 0.2rem; font-size: 0.65rem;" onclick="disqualifyPlayer(1)">Desqualificar</button>
+                    </div>
+                    <div style="font-weight: 700; font-size: 0.8rem;">VS</div>
+                    <div class="form-group">
+                        <label id="label-player2" style="display: block; margin-bottom: 0.5rem;"></label>
+                        <input type="number" id="force-score2" class="form-control" style="font-size: 1.25rem; text-align: center;" min="0" required>
+                        <button type="button" id="btn-dq-p2" class="btn btn-danger" style="margin-top: 0.5rem; padding: 0.2rem; font-size: 0.65rem;" onclick="disqualifyPlayer(2)">Desqualificar</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn" style="width: 100%;">Finalizar Partida Manualmente</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let eventSource = null;
+        try {
+            eventSource = new EventSource('/api/stream/admin');
+            eventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log("Admin State:", data);
+
+                    updateUSBIndicator(data.coordinator_connected);
+                    updateStationsUI(data.mesas);
+                    updateBracketsUI(data.partidas);
+                    updateEventStatus(data.partidas);
+                } catch(e) {}
+            };
+            eventSource.onerror = function() {
+                console.warn("Canal SSE admin desconectado.");
+            };
+        } catch(e) {}
+
+        window.addEventListener('beforeunload', function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+        });
+        window.addEventListener('pagehide', function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+        });
+
+        let globalPlayers = [];
+        let p1_global_id = null;
+        let p2_global_id = null;
+
+        function updateUSBIndicator(connected) {
+            const badge = document.getElementById('usb-status');
+            const text = document.getElementById('usb-text');
+            if (connected) {
+                badge.className = 'usb-badge usb-connected';
+                text.textContent = 'COORD: OK';
+            } else {
+                badge.className = 'usb-badge usb-disconnected';
+                text.textContent = 'COORD: OFF';
+            }
+        }
+
+        function updateEventStatus(partidas) {
+            // Se não houver partidas criadas, o status do campeonato é REGISTRATION
+            const badge = document.getElementById('event-status-badge');
+            const btnInit = document.getElementById('btn-init-bracket');
+
+            if (!partidas || partidas.length === 0) {
+                badge.textContent = 'Registro';
+                badge.style.color = 'var(--text-muted)';
+                btnInit.style.display = 'block';
+            } else {
+                btnInit.style.display = 'none';
+                const allFinished = partidas.every(p => p.status === 'FINISHED');
+                if (allFinished) {
+                    badge.textContent = 'Finalizado';
+                    badge.style.color = '#10B981';
+                } else {
+                    badge.textContent = 'Em Progresso';
+                    badge.style.color = 'var(--accent)';
+                }
+            }
+        }
+
+        function updateStationsUI(mesas) {
+            const container = document.getElementById('station-list');
+            container.innerHTML = '';
+
+            mesas.forEach(mesa => {
+                const card = document.createElement('div');
+                card.className = 'station-card';
+
+                let infoHTML = `
+                    <div class="station-info">
+                        <h3>${mesa.name}</h3>
+                        <p style="font-family: monospace; opacity: 0.6; font-size: 0.7rem;">Nó: ${mesa.node_mac || 'Sem vínculo'}</p>
+                `;
+
+                if (mesa.match_id) {
+                    const p1Badge = mesa.player1_checked_in ? '[✓]' : '[?]';
+                    const p2Badge = mesa.player2_checked_in ? '[✓]' : '[?]';
+                    infoHTML += `
+                        <p style="font-weight: 500; color: var(--text-main); font-size: 0.8rem; margin-top: 0.4rem;">
+                            Partida #${mesa.match_id}: ${mesa.player1} ${p1Badge} vs ${mesa.player2} ${p2Badge}
+                        </p>
+                    `;
+                } else {
+                    infoHTML += `<p>LIVRE</p>`;
+                }
+                infoHTML += `</div>`;
+
+                let badgeHTML = `<div style="text-align: right;">`;
+                if (mesa.status === 'PLAYING') {
+                    if (mesa.pending_score1 !== null) {
+                        badgeHTML += `<span class="usb-badge" style="border-color: var(--accent); color: var(--accent);">CHANCELA</span>`;
+                    } else {
+                        badgeHTML += `<span class="usb-badge usb-connected">JOGANDO</span>`;
+                    }
+                } else if (mesa.status === 'READY') {
+                    badgeHTML += `<span class="usb-badge" style="border-color: #3f3f46; color: var(--text-muted);">CHECK-IN</span>`;
+                } else {
+                    badgeHTML += `<span class="usb-badge usb-disconnected">LIVRE</span>`;
+                }
+
+                if (mesa.match_id) {
+                    badgeHTML += `
+                        <button onclick="freeStation(${mesa.id})" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.65rem; display: block; margin-top: 0.5rem; width: 100%;">Liberar</button>
+                    `;
+                }
+                badgeHTML += `</div>`;
+
+                card.innerHTML = infoHTML + badgeHTML;
+                container.appendChild(card);
+            });
+        }
+
+        function updateBracketsUI(partidas) {
+            const matchesMap = {};
+            partidas.forEach(p => { matchesMap[p.id] = p; });
+
+            [1, 2, 3].forEach(id => {
+                const match = matchesMap[id];
+                const card = document.getElementById(`match-card-${id}`);
+                if (!match) {
+                    card.innerHTML = `<div class="bracket-match-header">A DEFINIR</div>`;
+                    return;
+                }
+
+                const p1Name = match.player1 || "A definir";
+                const p2Name = match.player2 || "A definir";
+                const score1 = match.score1 !== null ? match.score1 : 0;
+                const score2 = match.score2 !== null ? match.score2 : 0;
+
+                const isFinished = match.status === 'FINISHED';
+                const p1Winner = isFinished && match.winner_id === match.player1_id && match.player1_id !== null;
+                const p2Winner = isFinished && match.winner_id === match.player2_id && match.player2_id !== null;
+
+                let headerTitle = id === 3 ? "Grande Final" : `Semifinal #${id}`;
+                let statusInfo = match.status;
+                if (match.status === 'PLAYING' && match.pending_score1 !== null) {
+                    statusInfo = "CONFIRMAR";
+                }
+
+                let actionsHTML = '';
+                if (match.status !== 'FINISHED' && match.player1_id && match.player2_id) {
+                    actionsHTML = `
+                        <button onclick="openAdminAction(${match.id}, '${p1Name}', ${match.player1_id}, '${p2Name}', ${match.player2_id})" class="btn" style="padding: 0.25rem 0.5rem; font-size: 0.65rem; width: 100%; margin-top: 0.6rem;">Ações de Partida</button>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="bracket-match-header">
+                        <span>${headerTitle}</span>
+                        <span style="font-weight: 700;">${statusInfo}</span>
+                    </div>
+                    <div class="bracket-team-row ${p1Winner ? 'winner' : ''}">
+                        <span class="bracket-team-name">${p1Name}</span>
+                        <span class="bracket-score">${score1}</span>
+                    </div>
+                    <div class="bracket-team-row ${p2Winner ? 'winner' : ''}">
+                        <span class="bracket-team-name">${p2Name}</span>
+                        <span class="bracket-score">${score2}</span>
+                    </div>
+                    ${actionsHTML}
+                `;
+            });
+        }
+
+        // Troca de Abas
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            const activeBtn = Array.from(document.querySelectorAll('.tab-btn')).find(btn => btn.getAttribute('onclick').includes(tabId));
+            if (activeBtn) activeBtn.classList.add('active');
+
+            const content = document.getElementById(tabId);
+            if (content) content.classList.add('active');
+        }
+
+        // Inicializar Chave
+        function initializeBracket() {
+            if (!confirm("Confirmar a inicialização do chaveamento? Inscrições serão travadas.")) return;
+
+            fetch('/api/admin/initialize_bracket', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            });
+        }
+
+        // Liberar mesa
+        function freeStation(stationId) {
+            if (!confirm("Desvincular mesa física da partida ativa?")) return;
+
+            fetch('/api/admin/free_station', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ station_id: stationId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) alert("Erro: " + data.message);
+            });
+        }
+
+        // Resetar
+        function confirmReset() {
+            if (!confirm("Limpar o banco e resetar campeonato?")) return;
+
+            fetch('/api/admin/reset', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Resetado!");
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            });
+        }
+
+        // Carregar Vínculos
+        function loadVinculosData() {
+            // Carregar Jogadores para Dropdown
+            fetch('/api/admin/players')
+            .then(res => res.json())
+            .then(players => {
+                const select = document.getElementById('select-bind-player');
+                select.innerHTML = '<option value="">Selecione...</option>';
+                players.filter(p => p.is_active).forEach(p => {
+                    select.innerHTML += `<option value="${p.id}">${p.nickname}</option>`;
+                });
+            });
+
+            // Carregar Mesas e Nós para Dropdown
+            Promise.all([
+                fetch('/api/admin/stations').then(res => res.json()),
+                fetch('/api/admin/nodes').then(res => res.json())
+            ])
+            .then(([stations, nodes]) => {
+                const selectStation = document.getElementById('select-bind-station');
+                const selectNode = document.getElementById('select-bind-node');
+
+                selectStation.innerHTML = '<option value="">Selecione...</option>';
+                stations.forEach(s => {
+                    selectStation.innerHTML += `<option value="${s.id}">${s.name} (${s.node_mac || 'Sem Nó'})</option>`;
+                });
+
+                selectNode.innerHTML = '<option value="">Nenhum (Desvincular)</option>';
+                nodes.forEach(n => {
+                    selectNode.innerHTML += `<option value="${n.mac_address}">${n.nickname} (${n.mac_address})</option>`;
+                });
+            });
+        }
+
+        // Bind Player & Tag Form
+        document.getElementById('form-bind-player-tag').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const player_id = document.getElementById('select-bind-player').value;
+            const tag_uid = document.getElementById('input-bind-tag').value.trim();
+
+            fetch('/api/admin/update_player', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    player_id: parseInt(player_id),
+                    real_name: "Ignorado", // O backend preservará ou atualizará conforme fornecido
+                    nickname: "Ignorado",  // Mas usaremos uma rota simplificada
+                    tag_uid: tag_uid
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Tag vinculada com sucesso!");
+                    document.getElementById('input-bind-tag').value = '';
+                } else {
+                    // Tentar atualização real do player buscando dados atuais
+                    fetch(`/api/admin/player_history/${player_id}`)
+                    .then(r => r.json())
+                    .then(info => {
+                        fetch('/api/admin/update_player', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                player_id: parseInt(player_id),
+                                real_name: info.player.real_name,
+                                nickname: info.player.nickname,
+                                tag_uid: tag_uid
+                            })
+                        })
+                        .then(r2 => r2.json())
+                        .then(d2 => {
+                            if (d2.success) {
+                                alert("Tag vinculada!");
+                                document.getElementById('input-bind-tag').value = '';
+                            } else {
+                                alert("Erro: " + d2.message);
+                            }
+                        });
+                    });
+                }
+            });
+        });
+
+        // Bind Station & Node Form
+        document.getElementById('form-bind-station-node').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const station_id = document.getElementById('select-bind-station').value;
+            const node_mac = document.getElementById('select-bind-node').value;
+
+            fetch('/api/admin/bind_node_station', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ station_id: parseInt(station_id), node_mac: node_mac })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Hardware vinculado à mesa!");
+                    loadVinculosData();
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            });
+        });
+
+        // CRUD: Carregar Lista de Jogadores
+        function loadPlayersList() {
+            fetch('/api/admin/players')
+            .then(res => res.json())
+            .then(players => {
+                globalPlayers = players;
+                filterPlayersList();
+            });
+        }
+
+        function filterPlayersList() {
+            const query = document.getElementById('search-player').value.toLowerCase();
+            const container = document.getElementById('players-list-container');
+            container.innerHTML = '';
+
+            globalPlayers.forEach(p => {
+                if (!p.real_name.toLowerCase().includes(query) && !p.nickname.toLowerCase().includes(query)) return;
+                
+                const div = document.createElement('div');
+                div.className = 'player-row';
+                div.id = `player-row-${p.id}`;
+                const status = p.is_active ? '' : ' <span style="opacity:0.4;">[Inativo]</span>';
+                div.innerHTML = `<span>${p.nickname}${status}</span>`;
+                div.onclick = () => selectPlayerForDetail(p.id);
+                container.appendChild(div);
+            });
+        }
+
+        function selectPlayerForDetail(playerId) {
+            document.querySelectorAll('.player-row').forEach(r => r.classList.remove('selected'));
+            const selectedRow = document.getElementById(`player-row-${playerId}`);
+            if (selectedRow) selectedRow.classList.add('selected');
+
+            fetch(`/api/admin/player_history/${playerId}`)
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('detail-title').textContent = `Ficha do Competidor #${playerId}`;
+                document.getElementById('form-player-crud').style.display = 'flex';
+                document.getElementById('crud-player-id').value = data.player.id;
+                document.getElementById('crud-real-name').value = data.player.real_name;
+                document.getElementById('crud-nickname').value = data.player.nickname;
+                document.getElementById('crud-tag-uid').value = data.player.tag_uid || '';
+
+                const btnDelete = document.getElementById('btn-soft-delete');
+                if (data.player.is_active) {
+                    btnDelete.style.display = 'block';
+                } else {
+                    btnDelete.style.display = 'none';
+                }
+
+                // Renderizar Histórico
+                const body = document.getElementById('player-history-body');
+                body.innerHTML = '';
+                if (data.matches.length === 0) {
+                    body.innerHTML = '<tr><td colspan="4" style="text-align:center;">Nenhuma partida registrada</td></tr>';
+                } else {
+                    data.matches.forEach(m => {
+                        const winnerMark = m.winner === data.player.nickname ? 'VÍTORIA' : 'DERROTA';
+                        body.innerHTML += `
+                            <tr>
+                                <td>${m.event_name}</td>
+                                <td>${m.player1} vs ${m.player2}</td>
+                                <td>${m.score1} x ${m.score2}</td>
+                                <td style="font-weight:700;">${winnerMark}</td>
+                            </tr>
+                        `;
+                    });
+                }
+                document.getElementById('player-history-container').style.display = 'block';
+            });
+        }
+
+        function openNewPlayerForm() {
+            document.querySelectorAll('.player-row').forEach(r => r.classList.remove('selected'));
+            document.getElementById('detail-title').textContent = "Cadastrar Novo Jogador";
+            document.getElementById('form-player-crud').style.display = 'flex';
+            document.getElementById('crud-player-id').value = '';
+            document.getElementById('crud-real-name').value = '';
+            document.getElementById('crud-nickname').value = '';
+            document.getElementById('crud-tag-uid').value = '';
+            document.getElementById('btn-soft-delete').style.display = 'none';
+            document.getElementById('player-history-container').style.display = 'none';
+        }
+
+        // CRUD Submit Form
+        document.getElementById('form-player-crud').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const player_id = document.getElementById('crud-player-id').value;
+            const real_name = document.getElementById('crud-real-name').value.trim();
+            const nickname = document.getElementById('crud-nickname').value.trim();
+            const tag_uid = document.getElementById('crud-tag-uid').value.trim();
+
+            const isNew = player_id === '';
+            const url = isNew ? '/api/admin/register_player' : '/api/admin/update_player';
+            
+            const payload = { real_name, nickname, tag_uid };
+            if (!isNew) {
+                payload.player_id = parseInt(player_id);
+            }
+
+            fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Jogador salvo!");
+                    loadPlayersList();
+                    openNewPlayerForm();
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            });
+        });
+
+        // Soft Delete
+        function softDeleteSelectedPlayer() {
+            const player_id = document.getElementById('crud-player-id').value;
+            if (!player_id) return;
+            if (!confirm("Confirmar a desativação deste jogador? Ele sumirá das buscas, mas seu histórico será mantido.")) return;
+
+            fetch('/api/admin/delete_player', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ player_id: parseInt(player_id) })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Jogador inativado!");
+                    loadPlayersList();
+                    openNewPlayerForm();
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            });
+        }
+
+        // Modais de Ações de Partidas (Forçar e DQ)
+        function openAdminAction(matchId, p1, p1Id, p2, p2Id) {
+            document.getElementById('modal-match-id').value = matchId;
+            document.getElementById('modal-match-title').textContent = `Ações da Partida #${matchId}`;
+            
+            document.getElementById('label-player1').textContent = p1;
+            document.getElementById('label-player2').textContent = p2;
+            
+            document.getElementById('force-score1').value = 0;
+            document.getElementById('force-score2').value = 0;
+            
+            p1_global_id = p1Id;
+            p2_global_id = p2Id;
+            
+            document.getElementById('action-modal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('action-modal').style.display = 'none';
+        }
+
+        function disqualifyPlayer(playerIndex) {
+            const matchId = parseInt(document.getElementById('modal-match-id').value);
+            const playerId = (playerIndex === 1) ? p1_global_id : p2_global_id;
+            const playerName = (playerIndex === 1) ? document.getElementById('label-player1').textContent : document.getElementById('label-player2').textContent;
+
+            if (!confirm(`Tem certeza que deseja desqualificar (DQ) o jogador ${playerName}?`)) return;
+
+            fetch('/api/admin/dq_player', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ match_id: matchId, player_id: playerId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    closeModal();
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            });
+        }
+
+        document.getElementById('force-winner-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const matchId = parseInt(document.getElementById('modal-match-id').value);
+            const score1 = parseInt(document.getElementById('force-score1').value);
+            const score2 = parseInt(document.getElementById('force-score2').value);
+
+            if (score1 === score2) {
+                alert("Eliminação direta não aceita empates!");
+                return;
+            }
+
+            fetch('/api/admin/force_winner', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ match_id: matchId, score1, score2 })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    closeModal();
+                } else {
+                    alert("Erro: " + data.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
