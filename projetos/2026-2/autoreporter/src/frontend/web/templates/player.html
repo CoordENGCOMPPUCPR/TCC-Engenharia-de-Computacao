@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autoreporter - Área do Competidor</title>
+    <!-- Tipografia Esports: Chakra Petch (Títulos/VS/Mesas) e Rajdhani (Corpo/Metadados) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,600;0,700;1,700&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-arena: #0B0E14;         /* Fundo da tela: preto carbono profundo */
+            --bg-card: #141922;          /* Superfície dos cards: slate escuro */
+            --bg-input: #07090D;         /* Fundo de campos de placar e dropdowns */
+            --border-base: #222C3A;      /* Bordas estruturais de cards */
+            --tryhard-cyan: #2DB5F6;     /* Ciano do hexágono TryHard: destaque primário */
+            --tryhard-cyan-hover: #1BA0DF;
+            --rage-red: #E84125;         /* Vermelho da veia TryHard: combate ativo e alertas */
+            --amber-wait: #F59E0B;       /* Âmbar de convocação e check-in pendente */
+            --green-popl: #10B981;       /* Verde esmeralda de confirmação RFID / vitória */
+            --text-bright: #F8FAFC;      /* Títulos e nomes (alto contraste) */
+            --text-muted: #8A99AD;       /* Metadados e rótulos auxiliares */
+        }
+
+        /* Classes Utilitárias de Geometria TryHard */
+        .hex-shape {
+            clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        }
+
+        .chamfer-btn {
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-arena);
+            background-image: radial-gradient(circle at 50% 12%, rgba(45, 181, 246, 0.07) 0%, transparent 60%);
+            color: var(--text-bright);
+            padding: 1.5rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-base);
+            border-radius: 4px;
+            padding: 2.25rem 1.75rem;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.7);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Linha superior luminosa TryHard Arena */
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--tryhard-cyan) 0%, var(--rage-red) 100%);
+        }
+
+        /* 1. Header do Competidor */
+        .avatar-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 1.25rem auto;
+            filter: drop-shadow(0 0 15px rgba(45, 181, 246, 0.35));
+        }
+
+        .profile-icon {
+            width: 76px;
+            height: 76px;
+            background: linear-gradient(135deg, var(--tryhard-cyan), #1BA0DF);
+            color: #0B0E14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.2rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--text-bright);
+            margin-bottom: 0.25rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .status-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-bottom: 1.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+        }
+
+        /* Dropdown de Campeonato Selecionado */
+        .event-selector-wrapper {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .event-selector-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.45rem;
+            letter-spacing: 0.08em;
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        .event-selector-input {
+            width: 100%;
+            background: var(--bg-input);
+            border: 1px solid var(--border-base);
+            color: var(--text-bright);
+            padding: 0.75rem 1rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            outline: none;
+            text-transform: uppercase;
+            font-family: 'Rajdhani', sans-serif;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .event-selector-input:focus {
+            border-color: var(--tryhard-cyan);
+            box-shadow: 0 0 10px rgba(45, 181, 246, 0.25);
+        }
+
+        /* Estrutura Geral de Cards */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-base);
+            border-radius: 4px;
+            padding: 1.4rem;
+            margin-bottom: 1.25rem;
+            text-align: center;
+        }
+
+        .card-title {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            margin-bottom: 0.85rem;
+            font-weight: 700;
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        /* 2. Painel Waiting */
+        .waiting-box {
+            padding: 1.75rem 0;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-weight: 700;
+        }
+
+        /* 3. Painel Ready */
+        .station-hex-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0.75rem 0;
+            filter: drop-shadow(0 0 14px rgba(45, 181, 246, 0.45));
+        }
+
+        .station-hex {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--tryhard-cyan), #1688C4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: stationHexPulse 2.4s infinite ease-in-out;
+        }
+
+        @keyframes stationHexPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: drop-shadow(0 0 8px rgba(45, 181, 246, 0.4));
+            }
+            50% {
+                transform: scale(1.05);
+                filter: drop-shadow(0 0 18px rgba(45, 181, 246, 0.75));
+            }
+        }
+
+        .station-number {
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            color: #0B0E14;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        .station-name-label {
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            letter-spacing: 0.05em;
+        }
+
+        .checkin-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 0.9rem;
+            border-radius: 4px;
+            background: var(--bg-input);
+            border: 1px solid var(--border-base);
+        }
+
+        .badge {
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--amber-wait);
+            border: 1px dashed var(--amber-wait);
+        }
+
+        .badge-ok {
+            background: var(--green-popl);
+            color: #0B0E14;
+            border: 1px solid var(--green-popl);
+            font-weight: 800;
+        }
+
+        /* 4. Painel Playing - Duelo de Arena */
+        .playing-station-title {
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            color: var(--tryhard-cyan);
+            font-family: 'Chakra Petch', sans-serif;
+            letter-spacing: 0.05em;
+        }
+
+        .duel-arena-box {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-base);
+            border-radius: 4px;
+            padding: 0.9rem 1rem;
+            margin-top: 0.75rem;
+        }
+
+        .duel-fighter-badge {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .duel-fighter-role {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .duel-fighter-name {
+            font-size: 1.15rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--text-bright);
+            text-transform: uppercase;
+            word-break: break-word;
+        }
+
+        .duel-vs-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0.5rem;
+        }
+
+        .duel-vs-text {
+            font-size: 1.15rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--rage-red);
+            text-shadow: 0 0 10px rgba(232, 65, 37, 0.45);
+            letter-spacing: 0.05em;
+        }
+
+        /* Formulário de Reporte de Placar */
+        .score-inputs {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .score-field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.45rem;
+        }
+
+        .score-field label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .score-field input {
+            background: var(--bg-input);
+            border: 1px solid var(--border-base);
+            color: var(--tryhard-cyan);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            text-align: center;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .score-field input:focus {
+            border-color: var(--tryhard-cyan);
+            box-shadow: 0 0 12px rgba(45, 181, 246, 0.35);
+        }
+
+        #btn-submit-score {
+            width: 100%;
+            background: var(--rage-red);
+            color: var(--text-bright);
+            border: none;
+            padding: 0.9rem;
+            font-size: 1rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(232, 65, 37, 0.35);
+        }
+
+        #btn-submit-score:hover:not(:disabled) {
+            background: #FF5335;
+            box-shadow: 0 6px 20px rgba(232, 65, 37, 0.55);
+            transform: translateY(-1px);
+        }
+
+        #btn-submit-score:active:not(:disabled) {
+            transform: translateY(1px);
+        }
+
+        #btn-submit-score:disabled {
+            background: var(--border-base);
+            color: var(--text-muted);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .error-msg {
+            background: rgba(232, 65, 37, 0.12);
+            color: var(--rage-red);
+            border: 1px solid var(--rage-red);
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        /* 5. Painel Confirming */
+        .confirming-score {
+            font-size: 3rem;
+            font-weight: 800;
+            font-family: 'Chakra Petch', sans-serif;
+            color: var(--text-bright);
+            margin: 0.6rem 0;
+            letter-spacing: 0.05em;
+        }
+
+        .confirming-help-text {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            line-height: 1.45;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
+        /* Painéis de Instrução / Status da Arena */
+        .instruction-panel {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            padding: 1rem 1.25rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            transition: all 0.3s ease;
+        }
+
+        .inst-ready {
+            background: rgba(45, 181, 246, 0.08);
+            color: var(--tryhard-cyan);
+            border: 1px solid var(--tryhard-cyan);
+            box-shadow: 0 0 15px rgba(45, 181, 246, 0.25);
+        }
+
+        .inst-playing {
+            background: rgba(232, 65, 37, 0.08);
+            color: var(--rage-red);
+            border: 1px solid var(--rage-red);
+            box-shadow: 0 0 15px rgba(232, 65, 37, 0.25);
+        }
+
+        .inst-confirming {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--amber-wait);
+            border: 1px solid var(--amber-wait);
+            animation: confirmPulse 1.8s infinite ease-in-out;
+        }
+
+        @keyframes confirmPulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+                border-color: var(--amber-wait);
+            }
+            50% {
+                box-shadow: 0 0 22px rgba(245, 158, 11, 0.7);
+                border-color: #FBBF24;
+            }
+        }
+
+        .inst-waiting {
+            background: rgba(138, 153, 173, 0.05);
+            color: var(--text-muted);
+            border: 1px dashed var(--border-base);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 1. Header do Competidor -->
+        <div class="avatar-wrapper">
+            <div class="profile-icon hex-shape">
+                {{ player_name[0] }}
+            </div>
+        </div>
+        <h1>{{ player_name }}</h1>
+        <p class="status-text">Competidor Registrado</p>
+
+        {% if events %}
+        <div class="event-selector-wrapper">
+            <label for="event-selector" class="event-selector-label">Campeonato Selecionado</label>
+            <select id="event-selector" class="event-selector-input">
+                {% for ev in events %}
+                <option value="{{ ev.id }}" data-status="{{ ev.status }}">
+                    {{ ev.name }} ({{ ev.date }}) — {% if ev.status == 'FINISHED' %}ENCERRADO{% else %}EM ANDAMENTO{% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+
+        <!-- ESTADO A: WAITING (Aguardando Alocação) -->
+        <div id="panel-waiting" class="state-panel">
+            <div class="card">
+                <div class="card-title">Status da Rodada</div>
+                <div class="waiting-box">
+                    Aguardando chaveamento ou alocação...
+                </div>
+            </div>
+
+            <!-- Previsão da Próxima Partida -->
+            <div id="waiting-preview-card" class="card" style="display: none; border-color: rgba(45, 181, 246, 0.5); box-shadow: 0 0 15px rgba(45, 181, 246, 0.15);">
+                <div class="card-title" style="color: var(--tryhard-cyan); margin-bottom: 0.5rem;">
+                    ⚡ Previsão da Próxima Partida
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem; text-transform: uppercase;">
+                    (Sujeito a alterações pela organização)
+                </div>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; background: var(--bg-input); padding: 0.85rem; border-radius: 4px; border: 1px solid var(--border-base);">
+                    <div style="font-size: 1.15rem; font-weight: 800; font-family: 'Chakra Petch', sans-serif;">
+                        vs <span id="preview-opponent-name" style="color: var(--tryhard-cyan);">-</span>
+                    </div>
+                    <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600;">
+                        Mesa prevista: <span id="preview-station-name" style="color: var(--text-bright); font-weight: 700;">-</span> • Rodada <span id="preview-round-number" style="color: var(--text-bright); font-weight: 700;">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instruction-panel inst-waiting">
+                Sem confrontos ativos
+            </div>
+        </div>
+
+        <!-- ESTADO B: READY (Check-in Pendente) -->
+        <div id="panel-ready" class="state-panel" style="display: none;">
+            <div class="card">
+                <div class="card-title">Mesa Designada</div>
+                <div class="station-hex-wrapper">
+                    <div class="hex-shape station-hex">
+                        <span id="ready-station-number" class="station-number">-</span>
+                    </div>
+                </div>
+                <div id="ready-station-name" class="station-name-label">Mesa -</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Presença por Mesa</div>
+                <div style="display: flex; flex-direction: column; gap: 0.65rem;">
+                    <div class="checkin-row">
+                        <span style="font-size: 0.95rem; font-weight: 700;">Você:</span>
+                        <span id="ready-checkin-self" class="badge">Pendente</span>
+                    </div>
+                    <div class="checkin-row">
+                        <span id="ready-opponent-label" style="font-size: 0.95rem; font-weight: 700;">Oponente:</span>
+                        <span id="ready-checkin-opponent" class="badge">Pendente</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="instruction-panel inst-ready">
+                Aproxime seu cartão RFID na mesa
+            </div>
+        </div>
+
+        <!-- ESTADO C: PLAYING (Partida em Andamento) -->
+        <div id="panel-playing" class="state-panel" style="display: none;">
+            <div class="card">
+                <div class="card-title">Confronto Ativo</div>
+                <div id="playing-station-name" class="playing-station-title">Mesa -</div>
+                <div class="duel-arena-box">
+                    <div class="duel-fighter-badge">
+                        <span class="duel-fighter-role">Você</span>
+                        <span class="duel-fighter-name">{{ player_name }}</span>
+                    </div>
+                    <div class="duel-vs-badge">
+                        <span class="duel-vs-text">💢 VS</span>
+                    </div>
+                    <div class="duel-fighter-badge">
+                        <span class="duel-fighter-role">Oponente</span>
+                        <span id="playing-opponent-name" class="duel-fighter-name">vs -</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Formulário de Scorecard -->
+            <div class="card">
+                <div class="card-title" style="text-align: left; margin-bottom: 0.5rem;">Reportar Placar</div>
+                <form id="score-form">
+                    <div class="score-inputs">
+                        <div class="score-field">
+                            <label for="my-score">Seu Placar</label>
+                            <input type="number" id="my-score" min="0" max="9" value="0" required>
+                        </div>
+                        <div class="score-field">
+                            <label for="opponent-score" id="opponent-score-label">Oponente</label>
+                            <input type="number" id="opponent-score" min="0" max="9" value="0" required>
+                        </div>
+                    </div>
+                    <button type="submit" id="btn-submit-score" class="chamfer-btn">Enviar Placar</button>
+                    <div id="form-error" class="error-msg" style="display: none;"></div>
+                </form>
+            </div>
+
+            <div class="instruction-panel inst-playing">
+                Partida em Andamento
+            </div>
+        </div>
+
+        <!-- ESTADO D: CONFIRMING (Confirmação Pendente & Divergência) -->
+        <div id="panel-confirming" class="state-panel" style="display: none;">
+            <div class="card">
+                <div id="confirming-title" class="card-title">Confirmação de Placar</div>
+                <div id="confirming-station-name" class="playing-station-title">Mesa -</div>
+                <div id="confirming-score-display" class="confirming-score">- x -</div>
+                <p id="confirming-help-text" class="confirming-help-text">
+                    Resultado enviado. Aproxime seu cartão RFID na mesa física para chancelar.
+                </p>
+                <div id="confirming-actions" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.5rem;">
+                    <button id="btn-dispute-score" class="chamfer-btn" style="background: #dc2626; display: none;" onclick="contestarPlacar()">⚠️ Discordar / Contestar Placar</button>
+                </div>
+            </div>
+
+            <div id="confirming-inst" class="instruction-panel inst-confirming">
+                Aguardando chancela na mesa
+            </div>
+        </div>
+
+        <!-- PAINEL DE HISTÓRICO DE PARTIDAS -->
+        <div id="panel-history" class="card" style="display: none; margin-top: 1.5rem; text-align: left;">
+            <div class="card-title">Histórico de Confrontos</div>
+            <div id="history-items" style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.75rem;">
+                <!-- Preenchido via JS -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const playerId = {{ player_id }};
+        const playerName = "{{ player_name }}";
+
+        function renderPlayerState(data) {
+            console.log("Competidor State:", data);
+
+            document.querySelectorAll('.state-panel').forEach(p => p.style.display = 'none');
+
+            if (data.has_match) {
+                const status = data.status;
+                const mId = data.match_id;
+
+                if (status === 'PLAYING' && data.pending_score1 !== null) {
+                    document.getElementById('panel-confirming').style.display = 'block';
+                    document.getElementById('confirming-station-name').textContent = data.station_name;
+                    
+                    const isP1 = (playerId === data.player1_id);
+                    const isReporter = (playerId === data.score_reporter_id);
+                    const myScore = isP1 ? data.pending_score1 : data.pending_score2;
+                    const oppScore = isP1 ? data.pending_score2 : data.pending_score1;
+                    const oppName = isP1 ? data.player2 : data.player1;
+                    
+                    document.getElementById('confirming-score-display').textContent = `${myScore} x ${oppScore}`;
+
+                    const titleEl = document.getElementById('confirming-title');
+                    const helpEl = document.getElementById('confirming-help-text');
+                    const instEl = document.getElementById('confirming-inst');
+                    const btnDispute = document.getElementById('btn-dispute-score');
+
+                    if (data.score_conflict) {
+                        titleEl.textContent = "⚠️ Conflito de Placar!";
+                        titleEl.style.color = "#ef4444";
+                        helpEl.innerHTML = `<strong style="color: #ef4444; font-size: 1rem;">Divergência detectada entre os competidores!</strong><br>A mesa física foi sinalizada em alerta vermelho.<br>Por favor, aguarde o juiz ou a organização arbitrar na mesa.`;
+                        instEl.textContent = "Aguardando arbitragem na mesa";
+                        instEl.className = "instruction-panel";
+                        instEl.style.background = "rgba(239, 68, 68, 0.15)";
+                        instEl.style.color = "#ef4444";
+                        instEl.style.borderColor = "#ef4444";
+                        btnDispute.style.display = 'none';
+                    } else if (isReporter) {
+                        titleEl.textContent = "Placar Proposto por Você";
+                        titleEl.style.color = "var(--text-main)";
+                        helpEl.innerHTML = `Você submeteu o resultado <strong>${myScore} x ${oppScore}</strong>.<br>Aguardando validação de <strong>${oppName}</strong> ou aproxime seu cartão RFID na mesa física para chancelar.`;
+                        instEl.textContent = "Aguardando chancela na mesa";
+                        instEl.className = "instruction-panel inst-confirming";
+                        instEl.style.background = "";
+                        instEl.style.color = "";
+                        instEl.style.borderColor = "";
+                        btnDispute.style.display = 'none';
+                    } else {
+                        titleEl.textContent = "Placar Proposto pelo Oponente";
+                        titleEl.style.color = "var(--text-main)";
+                        helpEl.innerHTML = `<strong>${oppName}</strong> propôs o placar de <strong>${myScore} x ${oppScore}</strong> (Você: ${myScore}, ${oppName}: ${oppScore}).<br>Se o resultado estiver correto, aproxime seu cartão RFID na mesa física para confirmar!`;
+                        instEl.textContent = "Aproxime sua tag RFID se concordar";
+                        instEl.className = "instruction-panel inst-ready";
+                        instEl.style.background = "";
+                        instEl.style.color = "";
+                        instEl.style.borderColor = "";
+                        btnDispute.style.display = 'block';
+                    }
+                }
+                else if (status === 'READY') {
+                    document.getElementById('panel-ready').style.display = 'block';
+                    document.getElementById('ready-station-name').textContent = data.station_name;
+                    
+                    let badgeText = "-";
+                    if (data.station_name) {
+                        const numMatch = data.station_name.match(/\d+/);
+                        if (numMatch) {
+                            badgeText = numMatch[0];
+                        } else {
+                            const cleanName = data.station_name.replace(/^(mesa|posto|estação|station)\s+/i, '').trim();
+                            badgeText = cleanName ? cleanName.charAt(0).toUpperCase() : data.station_name.trim().charAt(0).toUpperCase();
+                        }
+                    }
+                    document.getElementById('ready-station-number').textContent = badgeText;
+
+                    const isP1 = (playerId === data.player1_id);
+                    const myChecked = isP1 ? data.player1_checked_in : data.player2_checked_in;
+                    const oppChecked = isP1 ? data.player2_checked_in : data.player1_checked_in;
+                    const oppName = isP1 ? data.player2 : data.player1;
+
+                    const selfBadge = document.getElementById('ready-checkin-self');
+                    selfBadge.textContent = myChecked ? "Confirmado" : "Pendente";
+                    selfBadge.className = myChecked ? "badge badge-ok" : "badge badge-pending";
+
+                    const oppBadge = document.getElementById('ready-checkin-opponent');
+                    oppBadge.textContent = oppChecked ? "Confirmado" : "Pendente";
+                    oppBadge.className = oppChecked ? "badge badge-ok" : "badge badge-pending";
+
+                    document.getElementById('ready-opponent-label').textContent = `${oppName}:`;
+                }
+                else if (status === 'PLAYING') {
+                    document.getElementById('panel-playing').style.display = 'block';
+                    document.getElementById('playing-station-name').textContent = data.station_name;
+
+                    const isP1 = (playerId === data.player1_id);
+                    const oppName = isP1 ? data.player2 : data.player1;
+
+                    document.getElementById('playing-opponent-name').textContent = oppName;
+                    document.getElementById('opponent-score-label').textContent = `Oponente (${oppName})`;
+
+                    const form = document.getElementById('score-form');
+                    const isNewMatch = (form.dataset.matchId !== String(mId));
+                    form.dataset.matchId = mId;
+                    form.dataset.isP1 = isP1 ? "true" : "false";
+
+                    const myInput = document.getElementById('my-score');
+                    const oppInput = document.getElementById('opponent-score');
+                    if (isNewMatch || myInput.value === "") {
+                        myInput.value = 0;
+                    }
+                    if (isNewMatch || oppInput.value === "") {
+                        oppInput.value = 0;
+                    }
+
+                    document.getElementById('btn-submit-score').disabled = false;
+                    document.getElementById('btn-submit-score').textContent = 'Enviar Placar';
+                    if (isNewMatch) {
+                        document.getElementById('form-error').style.display = 'none';
+                    }
+                }
+            } else {
+                document.getElementById('panel-waiting').style.display = 'block';
+                const previewCard = document.getElementById('waiting-preview-card');
+                if (data.preview_match) {
+                    previewCard.style.display = 'block';
+                    document.getElementById('preview-opponent-name').textContent = data.preview_match.opponent_name || "A determinar";
+                    document.getElementById('preview-station-name').textContent = data.preview_match.station_name || "Aguardando mesa livre";
+                    document.getElementById('preview-round-number').textContent = data.preview_match.round_number || "-";
+                } else {
+                    previewCard.style.display = 'none';
+                }
+            }
+
+            // Atualiza histórico
+            const historyPanel = document.getElementById('panel-history');
+            const historyItems = document.getElementById('history-items');
+
+            if (data.history && data.history.length > 0) {
+                historyPanel.style.display = 'block';
+                historyItems.innerHTML = '';
+                
+                data.history.forEach(item => {
+                    const isP1 = (playerName === item.p1_name);
+                    const isBye = (!item.p1_name || !item.p2_name);
+                    const scoreSelf = isP1 ? item.score1 : item.score2;
+                    const scoreOpp = isP1 ? item.score2 : item.score1;
+                    const won = (item.winner_name === playerName);
+                    let oppName = isP1 ? item.p2_name : item.p1_name;
+                    if (!oppName) {
+                        oppName = "BYE (Avanço Automático)";
+                    }
+
+                    const titleText = isBye ? "AVANÇO POR BYE" : (won ? `VITÓRIA (${scoreSelf} x ${scoreOpp})` : `DERROTA (${scoreSelf} x ${scoreOpp})`);
+                    const titleColor = isBye ? "var(--tryhard-cyan)" : (won ? "var(--green-popl)" : "var(--text-muted)");
+                    const borderStyle = isBye ? "1px solid rgba(45, 181, 246, 0.4)" : `1px solid ${won ? 'var(--green-popl)' : 'var(--border-base)'}`;
+                    const shadowStyle = isBye ? "0 0 10px rgba(45, 181, 246, 0.15)" : (won ? '0 0 10px rgba(16, 185, 129, 0.15)' : 'none');
+
+                    const div = document.createElement('div');
+                    div.style.padding = '0.75rem 1rem';
+                    div.style.border = borderStyle;
+                    div.style.background = 'var(--bg-input)';
+                    div.style.borderRadius = '4px';
+                    div.style.display = 'flex';
+                    div.style.justifyContent = 'space-between';
+                    div.style.alignItems = 'center';
+                    div.style.boxShadow = shadowStyle;
+
+                    div.innerHTML = `
+                        <div>
+                            <div style="font-weight: 800; font-size: 1rem; text-transform: uppercase; color: ${titleColor}; font-family: 'Chakra Petch', sans-serif;">
+                                ${titleText}
+                            </div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; font-weight: 600;">
+                                vs ${oppName} • ${item.event_name}
+                            </div>
+                        </div>
+                    `;
+                    historyItems.appendChild(div);
+                });
+            } else {
+                historyPanel.style.display = 'none';
+            }
+        }
+
+        // 1. Carregamento Imediato REST HTTP (0 delay no carregamento da tela)
+        function carregarEstadoCompetidor() {
+            fetch(`/api/player_state/${playerId}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.error) {
+                        renderPlayerState(data);
+                    }
+                })
+                .catch(err => console.warn("Fetch state error:", err));
+        }
+
+        document.addEventListener('DOMContentLoaded', carregarEstadoCompetidor);
+        carregarEstadoCompetidor();
+
+        // 2. Polling de contingência a cada 1.0s (garante reatividade máxima sem travar conexões)
+        setInterval(carregarEstadoCompetidor, 1000);
+
+        // 3. Canal Real-time SSE (atualizações instantâneas push com fechamento seguro)
+        let eventSource = null;
+        try {
+            eventSource = new EventSource(`/api/stream/${playerId}`);
+            eventSource.onmessage = function(event) {
+                try {
+                    const data = JSON.parse(event.data);
+                    renderPlayerState(data);
+                } catch(e) {}
+            };
+            eventSource.onerror = function() {
+                console.warn("Canal SSE desconectado, operando continuamente via polling REST.");
+            };
+        } catch(e) {
+            console.warn("EventSource não suportado, operando via polling HTTP:", e);
+        }
+
+        window.addEventListener('beforeunload', function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+        });
+        window.addEventListener('pagehide', function() {
+            if (eventSource) {
+                eventSource.close();
+            }
+        });
+
+        // Limpar mensagens de erro ao alterar qualquer input
+        document.getElementById('my-score').addEventListener('input', function() {
+            document.getElementById('form-error').style.display = 'none';
+        });
+        document.getElementById('opponent-score').addEventListener('input', function() {
+            document.getElementById('form-error').style.display = 'none';
+        });
+
+        document.getElementById('score-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const form = this;
+            const matchId = parseInt(form.dataset.matchId);
+            const isP1 = (form.dataset.isP1 === "true");
+
+            const myInput = document.getElementById('my-score');
+            const oppInput = document.getElementById('opponent-score');
+            const errorDiv = document.getElementById('form-error');
+            const submitBtn = document.getElementById('btn-submit-score');
+
+            const myVal = parseInt(myInput.value);
+            const oppVal = parseInt(oppInput.value);
+
+            // Validação de entrada numérica válida
+            if (isNaN(myVal) || isNaN(oppVal) || myVal < 0 || oppVal < 0) {
+                errorDiv.textContent = "Por favor, insira valores válidos para o placar.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            // Validação de empate (Torneios de eliminação não admitem empate)
+            if (myVal === oppVal) {
+                errorDiv.textContent = "Não pode haver empate! Alguém precisa vencer a partida (ex: 2x0 ou 2x1).";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            errorDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Enviando...';
+
+            const score1 = isP1 ? myVal : oppVal;
+            const score2 = isP1 ? oppVal : myVal;
+
+            fetch('/api/report_score', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    match_id: matchId,
+                    score1: score1,
+                    score2: score2,
+                    reporter_id: playerId
+                })
+            })
+            .then(async response => {
+                let data = {};
+                try {
+                    data = await response.json();
+                } catch(e) {}
+
+                if (response.ok && data.success) {
+                    console.log("Placar submetido com sucesso!");
+                    // Atualiza instantaneamente a tela para o painel de confirmação sem esperar
+                    carregarEstadoCompetidor();
+                } else {
+                    errorDiv.textContent = data.message || "Erro ao registrar o placar.";
+                    errorDiv.style.display = 'block';
+                }
+            })
+            .catch(err => {
+                console.error("Falha ao submeter placar:", err);
+                errorDiv.textContent = "Erro de comunicação ao enviar placar. Tente novamente.";
+                errorDiv.style.display = 'block';
+            })
+            .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Enviar Placar';
+            });
+        });
+
+        function contestarPlacar() {
+            const form = document.getElementById('score-form');
+            const matchId = form.dataset.matchId;
+            if (!matchId) return;
+
+            if (confirm("Deseja contestar este placar? Uma divergência será registrada e a mesa será sinalizada com alerta para a organização arbitrar.")) {
+                fetch('/api/dispute_score', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ match_id: matchId, player_id: playerId })
+                })
+                .then(r => r.json())
+                .then(res => {
+                    alert(res.message);
+                })
+                .catch(err => alert("Erro ao registrar contestação."));
+            }
+        }
+    </script>
+</body>
+</html>
