@@ -1,0 +1,37 @@
+# =============================================================================
+# Dependencias do projeto — pip install -r requirements.txt
+# =============================================================================
+# Python 3.10 recomendado (compatibilidade com OpenOCR e PyTorch Lightning)
+
+# --- Comum a todos os modulos ------------------------------------------------
+numpy<2
+opencv-python-headless
+Pillow
+
+# --- Modulo I (deteccao + retificacao) ---------------------------------------
+ultralytics
+tqdm
+
+# --- Modulo II (degradacao parametrica) --------------------------------------
+albumentations
+
+# --- Modulo II (degradacao generativa — CycleGAN-Turbo) ----------------------
+# Requer o repositorio img2img-turbo clonado separadamente:
+#   git clone https://github.com/GaParmar/img2img-turbo.git
+# O script modulo2_cyclegan.py aponta para o repo via --repo_cyclegan
+
+# --- Modulo IV (OCR — PARSeq + SVTRv2 + IGTR) -------------------------------
+torch
+torchvision
+pytorch-lightning
+pyyaml
+timm
+nltk
+
+# OpenOCR (SVTRv2 + IGTR) — opcional caso deseje usar o IGTR/SVTRv2:
+#   git clone https://github.com/Topdu/OpenOCR.git src/modulo4/OpenOCR
+#   pip install -r src/modulo4/OpenOCR/requirements.txt
+#
+# Pesos opcionais do OpenOCR:
+#   wget -O src/modulo4/OpenOCR/openocr_repsvtr_ch.pth https://github.com/Topdu/OpenOCR/releases/download/develop0.0.1/openocr_repsvtr_ch.pth
+#   pip install gdown && gdown 1cfCJ-vuOx9ZoyEgGP2QtRqKMMBYTGq6Y -O src/modulo4/OpenOCR/igtr_synth_best.pth
