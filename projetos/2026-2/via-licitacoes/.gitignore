@@ -1,0 +1,45 @@
+
+# Credenciais e configurações locais
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+tmp/
+temp/
+_temp/
+storage/
+__pycache__/
+*.py[cod]
+
+# Ambientes virtuais Python
+.venv/
+venv/
+env/
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+
+# Arquivos de banco de dados locais
+*.sqlite
+*.sqlite3
+*.db
+
+# Documentos e apresentações acadêmicas
+*.pdf
+*.docx
+*.pptx
+
+# Arquivos temporários de importação
+import_*.json
+parcial_*.xlsx
